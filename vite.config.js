@@ -9,7 +9,10 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/login.css',
-                'resources/js/login.js'],
+                'resources/js/login.js',
+                'resources/css/programManagement.css',
+                'resources/js/programManagement.js',
+            ],
             refresh: true,
             fonts: [
                 bunny('Instrument Sans', {

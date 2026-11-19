@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExploreProgramController;
 use App\Http\Controllers\OpportunityController;
+use App\Http\Controllers\ProgramManagementController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -50,4 +51,12 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::view('/dashboard', 'admin.placeholder')->name('admin.dashboard');
+    Route::resource('program-management', ProgramManagementController::class)
+        ->except(['create', 'show', 'edit'])
+        ->names([
+            'index'   => 'admin.program-management.index',
+            'store'   => 'admin.program-management.store',
+            'update'  => 'admin.program-management.update',
+            'destroy' => 'admin.program-management.destroy',
+        ]);
 });
