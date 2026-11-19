@@ -42,6 +42,9 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
             ->where(['type' => $type, 'id' => '[0-9]+'])->name('update');
         Route::delete('/{type}/{id}', [OpportunityController::class, 'destroy'])
             ->where(['type' => $type, 'id' => '[0-9]+'])->name('destroy');
+
+        Route::get('/find-opportunities', [OpportunityController::class, 'index'])->name('opportunity.index');
+        Route::post('/find-opportunities', [OpportunityController::class, 'handleRequest'])->name('opportunity.handle');
     });
 });
 

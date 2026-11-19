@@ -4,197 +4,181 @@ namespace App\Http\Controllers;
 
 use App\Models\CareerPlan;
 use App\Models\StudentAchievement;
+use App\Models\StudentGoal;
 use App\Models\StudentProject;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Illuminate\View\View;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class OpportunityController extends Controller
 {
-    private const LEVELS = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
-
-    private const RELATIONS = [
-        'goals' => 'goals',
-        'projects' => 'projects',
-        'achievements' => 'achievements',
-        'career' => 'careerPlans',
+    private array $models = [
+        'goals'        => StudentGoal::class,
+        'projects'     => StudentProject::class,
+        'achievements' => StudentAchievement::class,
+        'career'       => CareerPlan::class,
     ];
 
-    private const SUCCESS_LABEL = [
-        'goals' => 'Goal / skill',
-        'projects' => 'Proyek',
-        'achievements' => 'Pencapaian',
-        'career' => 'Rencana karier',
-    ];
-
-    public function index(Request $request): View
+    private function authorizeStudent(): int
     {
-        $user = $request->user();
+        $user = Auth::user();
+        $role = strtolower($user->role ?? '');
 
-        return view('opportunity.index', [
-            'goals' => $user->goals,
-            'projects' => $user->projects,
-            'achievements' => $user->achievements,
-            'careerPlans' => $user->careerPlans,
-            'levels' => self::LEVELS,
-            'projectStatuses' => StudentProject::STATUSES,
-            'careerStatuses' => CareerPlan::STATUSES,
-        ]);
-    }
-
-    public function store(Request $request, string $type): RedirectResponse
-    {
-        $validator = $this->validator($request, $type);
-
-        if ($validator->fails()) {
-            return $this->invalid($validator, $type);
+        if (!$user || !in_array($role, ['mahasiswa', 'user'], true)) {
+            abort(403, 'Akses hanya untuk mahasiswa.');
         }
 
-        $data = $this->prepare($request, $type, $validator->validated());
-
-        $request->user()->{self::RELATIONS[$type]}()->create($data);
-
-        return $this->done($type, self::SUCCESS_LABEL[$type].' berhasil ditambahkan.');
+        return (int) $user->id;
     }
 
-    public function update(Request $request, string $type, int $id): RedirectResponse
+    public function index()
     {
-        $record = $request->user()->{self::RELATIONS[$type]}()->findOrFail($id);
+        $userId = $this->authorizeStudent();
 
-        $validator = $this->validator($request, $type);
+        $goals = StudentGoal::where('user_id', $userId)->orderByDesc('id')->get();
+        $projects = StudentProject::where('user_id', $userId)->orderByDesc('id')->get();
+        $achievements = StudentAchievement::where('user_id', $userId)->orderByDesc('id')->get();
+        $careerPlans = CareerPlan::where('user_id', $userId)->orderByDesc('id')->get();
 
-        if ($validator->fails()) {
-            return $this->invalid($validator, $type, $id);
-        }
+        $formatRecords = function ($collection, string $fallbackCategory) {
+            return $collection->map(function ($item) use ($fallbackCategory) {
+                $arr = $item->toArray();
+                $arr['display_title'] = $arr['title'] ?? $arr['project_name'] ?? $arr['career_title'] ?? '';
+                $arr['display_category'] = $arr['category'] ?? $fallbackCategory;
+                $arr['display_date'] = $arr['target_date'] ?? $arr['end_date'] ?? $arr['achievement_date'] ?? null;
+                $arr['has_status'] = array_key_exists('status', $arr) && $arr['status'] !== null;
+                $arr['status_class'] = $arr['status'] ?? 'completed';
+                $arr['status_label'] = Str::headline($arr['status'] ?? 'completed');
+                $arr['json_payload'] = json_encode($item->toArray());
+                return $arr;
+            });
+        };
 
-        $data = $this->prepare($request, $type, $validator->validated(), $record);
-
-        $record->update($data);
-
-        return $this->done($type, self::SUCCESS_LABEL[$type].' berhasil diperbarui.');
-    }
-
-    public function destroy(Request $request, string $type, int $id): RedirectResponse
-    {
-        $record = $request->user()->{self::RELATIONS[$type]}()->findOrFail($id);
-
-        if ($record instanceof StudentAchievement && $record->certificate_file) {
-            Storage::disk('public')->delete($record->certificate_file);
-        }
-
-        $record->delete();
-
-        return $this->done($type, self::SUCCESS_LABEL[$type].' berhasil dihapus.');
-    }
-
-    private function rules(string $type): array
-    {
-        return match ($type) {
+        $sections = [
             'goals' => [
-                'title' => ['required', 'string', 'max:150'],
-                'category' => ['nullable', 'string', 'max:50'],
-                'current_level' => ['nullable', Rule::in(self::LEVELS)],
-                'target_level' => ['nullable', Rule::in(self::LEVELS)],
-                'progress' => ['nullable', 'integer', 'between:0,100'],
-                'target_date' => ['nullable', 'date'],
-                'description' => ['nullable', 'string', 'max:5000'],
+                'title'    => 'My Goals & Skills',
+                'subtitle' => 'Catat target dan kemampuan yang ingin kamu kembangkan.',
+                'records'  => $formatRecords($goals, 'My Goals & Skills'),
             ],
             'projects' => [
-                'project_name' => ['required', 'string', 'max:150'],
-                'category' => ['nullable', 'string', 'max:50'],
-                'technologies' => ['nullable', 'string', 'max:1000'],
-                'project_url' => ['nullable', 'url', 'max:255'],
-                'description' => ['nullable', 'string', 'max:5000'],
-                'status' => ['required', Rule::in(StudentProject::STATUSES)],
+                'title'    => 'My Projects',
+                'subtitle' => 'Dokumentasikan proyek dan karya yang pernah kamu buat.',
+                'records'  => $formatRecords($projects, 'My Projects'),
             ],
             'achievements' => [
-                'title' => ['required', 'string', 'max:150'],
-                'category' => ['nullable', 'string', 'max:50'],
-                'organizer' => ['nullable', 'string', 'max:150'],
-                'achievement_date' => ['nullable', 'date'],
-                'description' => ['nullable', 'string', 'max:5000'],
-                'certificate_file' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+                'title'    => 'My Achievements',
+                'subtitle' => 'Simpan pencapaian dan pengalaman berhargamu.',
+                'records'  => $formatRecords($achievements, 'My Achievements'),
             ],
             'career' => [
-                'career_title' => ['required', 'string', 'max:150'],
-                'description' => ['nullable', 'string', 'max:5000'],
-                'target_date' => ['nullable', 'date'],
-                'status' => ['required', Rule::in(CareerPlan::STATUSES)],
+                'title'    => 'Career Roadmap',
+                'subtitle' => 'Rencanakan langkah menuju karier impianmu.',
+                'records'  => $formatRecords($careerPlans, 'Career Roadmap'),
             ],
-        };
+        ];
+
+        $goalsCount = $goals->count();
+        $projectsCount = $projects->count();
+        $achievementsCount = $achievements->count();
+        $totalRecords = $goalsCount + $projectsCount + $achievementsCount + $careerPlans->count();
+
+        $completedGoals = $goals->filter(
+            fn($item) => ($item->status ?? '') === 'completed' || (int) ($item->progress ?? 0) >= 100
+        )->count();
+
+        $completedProjects = $projects->where('status', 'completed')->count();
+        $completedItems = $completedGoals + $completedProjects;
+
+        $userName = Auth::user()->name ?? 'Mahasiswa';
+        $userInitial = strtoupper(substr($userName, 0, 1));
+
+        return view('opportunity.findOpportunities', compact(
+            'sections',
+            'goalsCount',
+            'projectsCount',
+            'achievementsCount',
+            'totalRecords',
+            'completedItems',
+            'userName',
+            'userInitial'
+        ));
     }
 
-    private function validator(Request $request, string $type)
+    public function handleRequest(Request $request)
     {
-        return Validator::make($request->all(), $this->rules($type), [
-            'required' => ':attribute wajib diisi.',
-            'max.string' => ':attribute maksimal :max karakter.',
-            'max.file' => ':attribute maksimal :max KB.',
-            'url' => ':attribute harus berupa URL yang valid (diawali http:// atau https://).',
-            'date' => ':attribute bukan tanggal yang valid.',
-            'integer' => ':attribute harus berupa angka.',
-            'between.numeric' => ':attribute harus antara :min sampai :max.',
-            'in' => 'Pilihan :attribute tidak valid.',
-            'mimes' => ':attribute harus berupa file PDF, JPG, atau PNG.',
-            'file' => ':attribute harus berupa file.',
-        ], [
-            'title' => 'Judul',
-            'project_name' => 'Nama proyek',
-            'career_title' => 'Karier impian',
-            'category' => 'Kategori',
-            'current_level' => 'Level saat ini',
-            'target_level' => 'Level target',
-            'progress' => 'Progress',
-            'target_date' => 'Target tanggal',
-            'description' => 'Deskripsi',
-            'technologies' => 'Teknologi',
-            'project_url' => 'Link proyek',
-            'status' => 'Status',
-            'organizer' => 'Penyelenggara',
-            'achievement_date' => 'Tanggal pencapaian',
-            'certificate_file' => 'File sertifikat',
-        ]);
-    }
+        $userId = $this->authorizeStudent();
 
-    private function prepare(Request $request, string $type, array $data, $record = null): array
-    {
-        if ($type === 'goals') {
-            $data['progress'] = $data['progress'] ?? 0;
+        $action = $request->input('action');
+        $type = $request->input('type');
+        $id = (int) $request->input('id', 0);
+
+        if (!isset($this->models[$type])) {
+            abort(422, 'Jenis data tidak valid.');
         }
 
-        if ($type === 'achievements') {
-            unset($data['certificate_file']);
+        $modelClass = $this->models[$type];
 
-            if ($request->hasFile('certificate_file')) {
-                if ($record?->certificate_file) {
-                    Storage::disk('public')->delete($record->certificate_file);
-                }
-
-                $data['certificate_file'] = $request->file('certificate_file')
-                    ->store('certificates', 'public');
+        if ($action === 'delete') {
+            if ($id <= 0) {
+                abort(422, 'ID tidak valid.');
             }
+
+            $modelClass::where('id', $id)->where('user_id', $userId)->delete();
+            return redirect()->route('opportunity.index');
         }
 
-        return $data;
-    }
+        if (!in_array($action, ['create', 'update'], true)) {
+            abort(422, 'Aksi tidak valid.');
+        }
 
-    private function invalid($validator, string $type, ?int $id = null): RedirectResponse
-    {
-        return redirect()->route('opportunities.index')
-            ->withErrors($validator)
-            ->withInput()
-            ->with('tab', $type)
-            ->with('reopen', ['type' => $type, 'id' => $id]);
-    }
+        $rulesByType = [
+            'goals' => [
+                'title'         => 'required|string|max:255',
+                'category'      => 'required|in:Goals,Skills',
+                'current_level' => 'nullable|string|max:100',
+                'target_level'  => 'nullable|string|max:100',
+                'progress'      => 'nullable|integer|min:0|max:100',
+                'target_date'   => 'nullable|date',
+                'description'   => 'nullable|string',
+            ],
+            'projects' => [
+                'project_name' => 'required|string|max:255',
+                'category'     => 'nullable|string|max:100',
+                'technologies' => 'nullable|string|max:255',
+                'project_url'  => 'nullable|string|max:255',
+                'description'  => 'nullable|string',
+                'status'       => 'nullable|in:planned,in_progress,completed',
+            ],
+            'achievements' => [
+                'title'            => 'required|string|max:255',
+                'category'         => 'nullable|string|max:100',
+                'organizer'        => 'nullable|string|max:255',
+                'achievement_date' => 'nullable|date',
+                'description'      => 'nullable|string',
+                'certificate_file' => 'nullable|string|max:255',
+            ],
+            'career' => [
+                'career_title' => 'required|string|max:255',
+                'description'  => 'nullable|string',
+                'target_date'  => 'nullable|date',
+                'status'       => 'nullable|in:planned,in_progress,completed',
+            ],
+        ];
 
-    private function done(string $type, string $message): RedirectResponse
-    {
-        return redirect()->route('opportunities.index')
-            ->with('success', $message)
-            ->with('tab', $type);
+        $validated = $request->validate($rulesByType[$type]);
+
+        if ($action === 'create') {
+            $validated['user_id'] = $userId;
+            $modelClass::create($validated);
+        } else {
+            if ($id <= 0) {
+                abort(422, 'ID tidak valid.');
+            }
+
+            $record = $modelClass::where('id', $id)->where('user_id', $userId)->firstOrFail();
+            $record->update($validated);
+        }
+
+        return redirect()->route('opportunity.index');
     }
 }

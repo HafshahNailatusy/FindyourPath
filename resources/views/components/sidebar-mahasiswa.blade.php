@@ -47,7 +47,6 @@
     </nav>
 
     <div class="sidebar-footer">
-        {{-- Logout harus POST (dilindungi CSRF) di Laravel --}}
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="nav-link logout-link logout-btn">

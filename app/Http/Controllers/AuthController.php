@@ -16,7 +16,16 @@ class AuthController extends Controller
 {
     public function showLogin(): View
     {
-        return view('auth.login');
+        $toastMessage = session('error') ?? session('success') ?? session('errors')?->first();
+        $toastType = '';
+
+        if (session('error') || session()->has('errors')) {
+            $toastType = 'show error';
+        } elseif (session('success')) {
+            $toastType = 'show success';
+        }
+
+        return view('auth.login', compact('toastMessage', 'toastType'));
     }
 
     public function login(Request $request): RedirectResponse
@@ -51,7 +60,7 @@ class AuthController extends Controller
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'username' => $data['username'],
-                'password' => $data['password'], 
+                'password' => $data['password'],
                 'role' => User::ROLE_MAHASISWA,
             ]);
 
