@@ -54,7 +54,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::put('/announcements/{id_announcement}', [AnnouncementController::class, 'update'])->name('admin.announcements.update');
     Route::delete('/announcements/{id_announcement}', [AnnouncementController::class, 'destroy'])->name('admin.announcements.destroy');
 
-    Route::resource('program-management', ProgramManagementController::class)
+    Route::resource('/program-management', ProgramManagementController::class)
         ->except(['create', 'show', 'edit'])
         ->names([
             'index'   => 'admin.program-management.index',

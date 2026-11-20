@@ -43,7 +43,13 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended('/');
+        $user = Auth::user();
+
+        if ($user instanceof User) {
+            return redirect()->to($user->homeUrl());
+        }
+
+        return redirect()->route('login');
     }
 
     public function showRegister(): View
