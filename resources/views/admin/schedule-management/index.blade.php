@@ -143,7 +143,6 @@
                     </div>
                 </section>
 
-                {{-- Kalender --}}
                 <section class="content-card calendar-card">
                     <div class="card-header-bar calendar-header-bar">
                         <div class="card-title-group">
@@ -173,7 +172,6 @@
         </div>
     </div>
 
-    {{-- Modal Tambah / Edit Jadwal --}}
     <div class="modal-overlay" id="programModal">
         <div class="modal-box">
             <div class="modal-header">
@@ -189,7 +187,7 @@
                     <div class="form-group">
                         <label for="selectProgram">Pilih Program <span class="required">*</span></label>
                         <select id="selectProgram" name="id_program" required>
-                            <option value="">-- Pilih Program --</option>
+                            <option value="">Pilih Program</option>
                             @foreach ($programs as $prog)
                                 <option value="{{ $prog->id_program }}">{{ $prog->nama_program }}</option>
                             @endforeach
@@ -213,17 +211,17 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="inputStartDate">Mulai Pendaftaran <span class="required">*</span></label>
+                            <label for="inputStartDate">Mulai Stage<span class="required">*</span></label>
                             <input type="date" id="inputStartDate" name="start_date" required>
                         </div>
                         <div class="form-group">
-                            <label for="inputEndDate">Selesai Pendaftaran <span class="required">*</span></label>
+                            <label for="inputEndDate">Selesai Stage<span class="required">*</span></label>
                             <input type="date" id="inputEndDate" name="end_date" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="inputEventDate">Tanggal Pelaksanaan / Kalender <span class="required">*</span></label>
+                        <label for="inputEventDate">Tanggal Pelaksanaan<span class="required">*</span></label>
                         <input type="date" id="inputEventDate" name="event_date" required>
                         <small class="form-helper">Tanggal ini akan ditandai pada Kalender.</small>
                     </div>
@@ -237,13 +235,11 @@
         </div>
     </div>
 
-    {{-- Form Hapus --}}
     <form id="deleteForm" method="POST" action="" style="display: none;">
         @csrf
         @method('DELETE')
     </form>
 
-    {{-- Data Schedules untuk Kalender JavaScript --}}
     <script>
         const initialSchedules = @json($schedules);
         const scheduleStoreUrl = "{{ route('admin.schedule.store') }}";

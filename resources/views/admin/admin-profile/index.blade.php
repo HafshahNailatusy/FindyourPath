@@ -65,7 +65,6 @@
                     </div>
                 </div>
 
-                {{-- Card Data Diri --}}
                 <div class="profile-card">
                     <h3 class="card-section-title">Data Diri</h3>
                     <p class="card-section-subtitle">Informasi pribadi admin</p>
@@ -84,7 +83,6 @@
                     </div>
                 </div>
 
-                {{-- Card Info Akun --}}
                 <div class="profile-card">
                     <h3 class="card-section-title">Informasi Akun</h3>
                     <p class="card-section-subtitle">Detail akun dan hak akses</p>
@@ -101,7 +99,6 @@
             </main>
         </div>
 
-        {{-- Modal Edit Profil --}}
         <div class="modal-overlay" id="editProfileModal">
             <div class="modal-box">
                 <div class="modal-header">
@@ -168,6 +165,7 @@
             </div>
         </div>
     </div>
+    
     <form id="deleteAvatarForm" method="POST" action="{{ route('admin.profile.avatar.delete') }}" style="display: none;">
         @csrf
         @method('DELETE')
