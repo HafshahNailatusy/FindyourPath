@@ -241,9 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPrevMonth = document.getElementById('btnPrevMonth');
     const btnNextMonth = document.getElementById('btnNextMonth');
 
-
-    let calYear = 2026;
-    let calMonth = 9; 
+    const today = new Date();
+    let calYear = today.getFullYear();
+    let calMonth = today.getMonth();
 
     const monthNamesIndo = [
         'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -328,12 +328,9 @@ document.addEventListener('DOMContentLoaded', () => {
         eventsList.className = 'events-list';
 
         const matchingEvents = schedulesList.filter(item => {
-            if (item.event_date && item.event_date === dateStr) 
-                return true;
-            if (item.start_date && item.start_date === dateStr) 
-                return true;
-
-            return false;
+            const evDate = item.event_date ? item.event_date.substring(0, 10) : '';
+            const stDate = item.start_date ? item.start_date.substring(0, 10) : '';
+            return evDate === dateStr || stDate === dateStr;
         });
 
         matchingEvents.forEach(evt => {
@@ -352,38 +349,36 @@ document.addEventListener('DOMContentLoaded', () => {
             eventItem.appendChild(titleSpan);
 
             eventItem.addEventListener('click', (e) => {
-                e.stopPropagation();
-                modalTitle.textContent = 'Edit Program';
-                formAction.value = 'update';
-                formId.value = evt.id;
-                inputTitle.value = evt.title || '';
-                inputCategory.value = evt.category || 'Lomba';
-                inputStatus.value = evt.status || 'Aktif';
-                inputStartDate.value = evt.start_date || '';
-                inputEndDate.value = evt.end_date || '';
-                inputEventDate.value = evt.event_date || evt.start_date || '';
-                inputLocation.value = evt.location || '';
-                inputDescription.value = evt.description || '';
-                openModal();
-            });
+            e.stopPropagation();
+            modalTitle.textContent = 'Edit Jadwal';
+            formMethod.value = 'PUT';
+            programForm.action = (typeof scheduleBaseUrl !== 'undefined' ? scheduleBaseUrl : '/admin/schedule') + '/' + evt.id;
+
+            if (selectProgram) selectProgram.value = evt.id_program;
+            if (inputStage) inputStage.value = evt.stage_name || '';
+            if (inputStatus) inputStatus.value = evt.status || 'Akan Datang';
+            if (inputStartDate) inputStartDate.value = evt.start_date ? evt.start_date.substring(0, 10) : '';
+            if (inputEndDate) inputEndDate.value = evt.end_date ? evt.end_date.substring(0, 10) : '';
+            if (inputEventDate) inputEventDate.value = evt.event_date ? evt.event_date.substring(0, 10) : '';
+
+            openModal();
+        });
             eventsList.appendChild(eventItem);
         });
         cell.appendChild(eventsList);
 
         if (!isOtherMonth) {
-            cell.addEventListener('click', () => {
-                modalTitle.textContent = 'Tambah Program';
-                formAction.value = 'create';
-                formId.value = '';
-                programForm.reset();
-                inputStatus.value = 'Aktif';
-                inputCategory.value = 'Lomba';
-                inputEventDate.value = dateStr;
-                inputStartDate.value = dateStr;
-                openModal();
-            });
-        }
-
+        cell.addEventListener('click', () => {
+            modalTitle.textContent = 'Tambah Jadwal';
+            formMethod.value = 'POST';
+            programForm.action = typeof scheduleStoreUrl !== 'undefined' ? scheduleStoreUrl : '/admin/schedule';
+        programForm.reset();
+        if (inputStatus) inputStatus.value = 'Akan Datang';
+        if (inputEventDate) inputEventDate.value = dateStr;
+        if (inputStartDate) inputStartDate.value = dateStr;
+        openModal();
+    });
+}
         return cell;
     }
 

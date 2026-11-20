@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ScheduleManagement extends Model
 {
-    // Menggunakan nama tabel yang sudah ada (pakai huruf s)
     protected $table = 'schedules_management';
     protected $primaryKey = 'id_schedule';
 
@@ -20,7 +19,15 @@ class ScheduleManagement extends Model
         'event_date',
     ];
 
-    // Relasi untuk mengambil data program (nama, bidang, dll)
+    protected function casts(): array
+    {
+        return [
+            'start_date' => 'date:Y-m-d',
+            'end_date'   => 'date:Y-m-d',
+            'event_date' => 'date:Y-m-d',
+        ];
+    }
+
     public function program(): BelongsTo
     {
         return $this->belongsTo(ProgramManagement::class, 'id_program', 'id_program');

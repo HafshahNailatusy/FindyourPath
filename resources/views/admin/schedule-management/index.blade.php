@@ -49,6 +49,17 @@
                     </div>
                 @endif
 
+                 @if ($errors->any())
+                    <div class="toast-alert show" style="background-color: #fee2e2; color: #991b1b; border: 1px solid #f87171; margin-bottom: 16px; padding: 12px 16px; border-radius: 8px;">
+                        <strong>Gagal menyimpan jadwal:</strong>
+                        <ul style="margin: 6px 0 0 18px;">
+                            @foreach ($errors->all() as $err)
+                                <li>{{ $err }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <section class="welcome-section">
                     <h2 class="welcome-title">Hi, {{ auth()->user()->name ?? 'Admin' }}!</h2>
                     <p class="welcome-subtitle">Kelola dan pantau jadwal program, kompetisi, beasiswa dalam satu tempat.</p>
@@ -102,15 +113,19 @@
                                         } elseif ($item['status'] === 'Selesai') {
                                             $statusClass = 'status-selesai';
                                         }
+
+                                        $rawStart = !empty($item['start_date']) ? date('Y-m-d', strtotime($item['start_date'])) : '';
+                                        $rawEnd   = !empty($item['end_date'])   ? date('Y-m-d', strtotime($item['end_date']))   : '';
+                                        $rawEvent = !empty($item['event_date']) ? date('Y-m-d', strtotime($item['event_date'])) : '';
                                     @endphp
                                     <tr class="program-row" 
                                         data-id="{{ $item['id'] }}"
                                         data-id-program="{{ $item['id_program'] }}"
                                         data-stage="{{ $item['stage_name'] }}"
                                         data-status="{{ $item['status'] }}"
-                                        data-start="{{ $item['start_date'] }}"
-                                        data-end="{{ $item['end_date'] }}"
-                                        data-event="{{ $item['event_date'] }}">
+                                        data-start="{{ $rawStart }}"
+                                        data-end="{{ $rawEnd }}"
+                                        data-event="{{ $rawEvent }}">
                                         
                                         <td class="td-program">
                                             <span class="program-title-text">{{ $item['title'] }}</span>
