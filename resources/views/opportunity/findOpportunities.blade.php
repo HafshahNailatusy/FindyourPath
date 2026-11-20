@@ -11,12 +11,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <link rel="stylesheet" href="{{ asset('css/sidebarMahasiswa.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/find-opportunity.css') }}">
+    @vite(['resources/css/sidebarMahasiswa.css', 'resources/css/find-opportunity.css', ])
 </head>
 
-<body>
+<body data-error="{{ $errorMessage }}">
 
     <div class="dashboard-container">
 
@@ -64,12 +64,16 @@
                         </p>
                     </div>
 
-                    <div class="hero-decoration">✦</div>
+                    <div class="hero-decoration">
+                        <i class="bi bi-compass"></i>
+                    </div>
                 </section>
 
                 <section class="summary-grid">
                     <div class="summary-card">
-                        <div class="summary-icon blue">🎯</div>
+                        <div class="summary-icon blue">
+                            <i class="bi bi-bullseye"></i>
+                        </div>
                         <div>
                             <span>Total Goals & Skills</span>
                             <h3>{{ $goalsCount }}</h3>
@@ -77,7 +81,9 @@
                     </div>
 
                     <div class="summary-card">
-                        <div class="summary-icon teal">💻</div>
+                        <div class="summary-icon teal">
+                            <i class="bi bi-folder2-open"></i>
+                        </div>
                         <div>
                             <span>Total Projects</span>
                             <h3>{{ $projectsCount }}</h3>
@@ -85,7 +91,9 @@
                     </div>
 
                     <div class="summary-card">
-                        <div class="summary-icon purple">🏆</div>
+                        <div class="summary-icon purple">
+                            <i class="bi bi-trophy"></i>
+                        </div>
                         <div>
                             <span>Achievements</span>
                             <h3>{{ $achievementsCount }}</h3>
@@ -93,7 +101,9 @@
                     </div>
 
                     <div class="summary-card">
-                        <div class="summary-icon orange">🚀</div>
+                        <div class="summary-icon orange">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
                         <div>
                             <span>Completed Items</span>
                             <h3>{{ $completedItems }}</h3>
@@ -114,116 +124,116 @@
 
                 <nav class="opportunity-tabs">
                     @foreach ($sections as $key => $section)
-                        <button
-                            class="tab-btn {{ $loop->first ? 'active' : '' }}"
-                            data-tab="{{ $key }}">
-                            {{ $section['title'] }}
-                        </button>
+                    <button
+                        type="button"
+                        class="tab-btn {{ $key === $activeTab ? 'active' : '' }}"
+                        data-tab="{{ $key }}">
+                        {{ $section['title'] }}
+                    </button>
                     @endforeach
                 </nav>
 
                 @foreach ($sections as $key => $section)
-                    <section
-                        class="tab-content {{ $loop->first ? 'active' : '' }}"
-                        id="tab-{{ $key }}">
+                <section
+                    class="tab-content {{ $key === $activeTab ? 'active' : '' }}"
+                    id="tab-{{ $key }}">
 
-                        <div class="content-heading">
-                            <div>
-                                <h3>{{ $section['title'] }}</h3>
-                                <p>{{ $section['subtitle'] }}</p>
+                    <div class="content-heading">
+                        <div>
+                            <h3>{{ $section['title'] }}</h3>
+                            <p>{{ $section['subtitle'] }}</p>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="btn-add"
+                            data-create="{{ $key }}"
+                            data-action="{{ route('opportunity.handle') }}">
+                            + Tambah Data
+                        </button>
+                    </div>
+
+                    <div class="record-grid">
+                        @forelse ($section['records'] as $record)
+                        <article class="record-card">
+
+                            <div class="record-top">
+                                <span class="record-category">
+                                    {{ $record['display_category'] }}
+                                </span>
+
+                                @if ($record['has_status'])
+                                <span class="status-badge {{ $record['status_class'] }}">
+                                    {{ $record['status_label'] }}
+                                </span>
+                                @endif
                             </div>
 
-                            <button
-                                class="btn-add"
-                                data-create="{{ $key }}">
-                                + Tambah Data
-                            </button>
+                            <h4>
+                                {{ $record['display_title'] }}
+                            </h4>
+
+                            @if (!empty($record['organizer']))
+                            <p class="record-subtitle">
+                                {{ $record['organizer'] }}
+                            </p>
+                            @endif
+
+                            <p class="record-description">
+                                {{ $record['description'] ?? 'Belum ada deskripsi.' }}
+                            </p>
+
+                            <div class="record-date">
+                                @if ($record['display_date'])
+                                <span>◷ {{ $record['display_date'] }}</span>
+                                @endif
+                            </div>
+
+                            <div class="record-actions">
+
+                                <button
+                                    type="button"
+                                    class="btn-edit"
+                                    data-edit="{{ $key }}"
+                                    data-action="{{ route('opportunity.handle') }}"
+                                    data-record="{{ $record['json_payload'] }}">
+                                    Edit
+                                </button>
+
+                                <form method="POST"
+                                    action="{{ route('opportunity.handle') }}"
+                                    onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+
+                                    @csrf
+
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="type" value="{{ $key }}">
+                                    <input type="hidden" name="id" value="{{ $record['id'] }}">
+
+                                    <button type="submit" class="btn-delete">
+                                        Hapus
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </article>
+                        @empty
+                        <div class="empty-state">
+                            <div>
+                                <i class="bi bi-folder-plus"></i>
+                            </div>
+                            <h3>Belum ada data</h3>
+                            <p>
+                                Mulai catat perkembanganmu dan bangun
+                                perjalanan masa depanmu!
+                            </p>
                         </div>
+                        @endforelse
+                    </div>
 
-                        <div class="record-grid">
-                            @forelse ($section['records'] as $record)
-                                <article class="record-card">
-
-                                    <div class="record-top">
-                                        <span class="record-category">
-                                            {{ $record['display_category'] }}
-                                        </span>
-
-                                        @if ($record['has_status'])
-                                            <span class="status-badge {{ $record['status_class'] }}">
-                                                {{ $record['status_label'] }}
-                                            </span>
-                                        @endif
-                                    </div>
-
-                                    <h4>
-                                        {{ $record['display_title'] }}
-                                    </h4>
-
-                                    @if (!empty($record['organizer']))
-                                        <p class="record-subtitle">
-                                            {{ $record['organizer'] }}
-                                        </p>
-                                    @endif
-
-                                    @if (!empty($record['category']))
-                                        <span class="category-tag">
-                                            {{ $record['category'] }}
-                                        </span>
-                                    @endif
-
-                                    <p class="record-description">
-                                        {{ $record['description'] ?? 'Belum ada deskripsi.' }}
-                                    </p>
-
-                                    <div class="record-date">
-                                        @if ($record['display_date'])
-                                            <span>◷ {{ $record['display_date'] }}</span>
-                                        @endif
-                                    </div>
-
-                                    <div class="record-actions">
-
-                                        <button
-                                            type="button"
-                                            class="btn-edit"
-                                            data-edit="{{ $key }}"
-                                            data-record="{{ $record['json_payload'] }}">
-                                            Edit
-                                        </button>
-
-                                        <form method="POST"
-                                            action="{{ route('opportunity.handle') }}"
-                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-
-                                            @csrf
-
-                                            <input type="hidden" name="action" value="delete">
-                                            <input type="hidden" name="type" value="{{ $key }}">
-                                            <input type="hidden" name="id" value="{{ $record['id'] }}">
-
-                                            <button type="submit" class="btn-delete">
-                                                Hapus
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
-                                </article>
-                            @empty
-                                <div class="empty-state">
-                                    <div>✦</div>
-                                    <h3>Belum ada data</h3>
-                                    <p>
-                                        Mulai catat perkembanganmu dan bangun
-                                        perjalanan masa depanmu!
-                                    </p>
-                                </div>
-                            @endforelse
-                        </div>
-
-                    </section>
+                </section>
                 @endforeach
 
             </div>
@@ -247,9 +257,10 @@
                 </button>
             </div>
 
-            <form method="POST" action="{{ route('opportunity.handle') }}" id="recordForm">
+            <form method="POST" action="{{ route('opportunity.handle') }}" id="recordForm" enctype="multipart/form-data">
 
                 @csrf
+                <input type="hidden" name="_method" id="formMethod" value="POST">
 
                 <input type="hidden" name="action" id="formAction" value="create">
                 <input type="hidden" name="type" id="formType">
@@ -272,9 +283,7 @@
         </div>
 
     </div>
-
-    <script src="{{ asset('js/find-opportunity.js') }}"></script>
-
+    @vite('resources/js/find-opportunity.js')
 </body>
 
 </html>

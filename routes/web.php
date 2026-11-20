@@ -23,6 +23,10 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
+
 Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
     Route::view('/dashboard', 'mahasiswa.placeholder', ['title' => 'Dashboard', 'menu' => 'dashboard'])
         ->name('mahasiswa.dashboard');
@@ -32,20 +36,10 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
     Route::get('/explore-program', [ExploreProgramController::class, 'index'])
         ->name('explore-program');
 
-    Route::prefix('find-opportunities')->name('opportunities.')->group(function () {
-        $type = 'goals|projects|achievements|career';
-
-        Route::get('/', [OpportunityController::class, 'index'])->name('index');
-        Route::post('/{type}', [OpportunityController::class, 'store'])
-            ->where('type', $type)->name('store');
-        Route::put('/{type}/{id}', [OpportunityController::class, 'update'])
-            ->where(['type' => $type, 'id' => '[0-9]+'])->name('update');
-        Route::delete('/{type}/{id}', [OpportunityController::class, 'destroy'])
-            ->where(['type' => $type, 'id' => '[0-9]+'])->name('destroy');
-
-        Route::get('/find-opportunities', [OpportunityController::class, 'index'])->name('opportunity.index');
-        Route::post('/find-opportunities', [OpportunityController::class, 'handleRequest'])->name('opportunity.handle');
-    });
+    Route::get('/find-opportunities', [OpportunityController::class, 'index'])
+        ->name('opportunities.index');
+    Route::post('/find-opportunities', [OpportunityController::class, 'handleRequest'])
+        ->name('opportunity.handle');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {

@@ -31,9 +31,15 @@ class OpportunityController extends Controller
         return (int) $user->id;
     }
 
-    public function index()
+    public function index(Request $request)
     {
         $userId = $this->authorizeStudent();
+        $errorMessage = session('errors') ? session('errors')->first() : null;
+
+        $activeTab = $request->query('tab') ?? session('tab') ?? 'goals';
+        if (!in_array($activeTab, ['goals', 'projects', 'achievements', 'career'], true)) {
+            $activeTab = 'goals';
+        }
 
         $goals = StudentGoal::where('user_id', $userId)->orderByDesc('id')->get();
         $projects = StudentProject::where('user_id', $userId)->orderByDesc('id')->get();
@@ -100,7 +106,9 @@ class OpportunityController extends Controller
             'totalRecords',
             'completedItems',
             'userName',
-            'userInitial'
+            'userInitial',
+            'errorMessage',
+            'activeTab'
         ));
     }
 
@@ -113,28 +121,28 @@ class OpportunityController extends Controller
         $id = (int) $request->input('id', 0);
 
         if (!isset($this->models[$type])) {
-            abort(422, 'Jenis data tidak valid.');
+            return back()->withErrors(['type' => 'Jenis data tidak valid (type kosong).']);
         }
 
         $modelClass = $this->models[$type];
 
         if ($action === 'delete') {
             if ($id <= 0) {
-                abort(422, 'ID tidak valid.');
+                return back()->withErrors(['id' => 'ID tidak valid.']);
             }
 
             $modelClass::where('id', $id)->where('user_id', $userId)->delete();
-            return redirect()->route('opportunity.index');
+            return redirect()->route('opportunities.index', ['tab' => $type]);
         }
 
         if (!in_array($action, ['create', 'update'], true)) {
-            abort(422, 'Aksi tidak valid.');
+            return back()->withErrors(['action' => 'Aksi tidak valid.']);
         }
 
         $rulesByType = [
             'goals' => [
                 'title'         => 'required|string|max:255',
-                'category'      => 'required|in:Goals,Skills',
+                'category'      => 'required|in:Goal,Skill,Goals,Skills',
                 'current_level' => 'nullable|string|max:100',
                 'target_level'  => 'nullable|string|max:100',
                 'progress'      => 'nullable|integer|min:0|max:100',
@@ -147,7 +155,7 @@ class OpportunityController extends Controller
                 'technologies' => 'nullable|string|max:255',
                 'project_url'  => 'nullable|string|max:255',
                 'description'  => 'nullable|string',
-                'status'       => 'nullable|in:planned,in_progress,completed',
+                'status'       => 'nullable|in:Planned,In Progress,Completed,planned,in_progress,completed',
             ],
             'achievements' => [
                 'title'            => 'required|string|max:255',
@@ -155,30 +163,45 @@ class OpportunityController extends Controller
                 'organizer'        => 'nullable|string|max:255',
                 'achievement_date' => 'nullable|date',
                 'description'      => 'nullable|string',
-                'certificate_file' => 'nullable|string|max:255',
+                'certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             ],
             'career' => [
                 'career_title' => 'required|string|max:255',
                 'description'  => 'nullable|string',
                 'target_date'  => 'nullable|date',
-                'status'       => 'nullable|in:planned,in_progress,completed',
+                'status'       => 'nullable|in:Planning,In Progress,Completed,planning,planned,in_progress,completed',
             ],
         ];
 
         $validated = $request->validate($rulesByType[$type]);
+
+        if ($type === 'achievements') {
+            if ($request->hasFile('certificate_file')) {
+                if ($action === 'update' && $id > 0) {
+                    $oldRecord = $modelClass::where('id', $id)->where('user_id', $userId)->first();
+                    if ($oldRecord?->certificate_file) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldRecord->certificate_file);
+                    }
+                }
+                $validated['certificate_file'] = $request->file('certificate_file')
+                    ->store('certificates', 'public');
+            } else {
+                unset($validated['certificate_file']);
+            }
+        }
 
         if ($action === 'create') {
             $validated['user_id'] = $userId;
             $modelClass::create($validated);
         } else {
             if ($id <= 0) {
-                abort(422, 'ID tidak valid.');
+                return back()->withErrors(['id' => 'ID tidak valid.']);
             }
 
             $record = $modelClass::where('id', $id)->where('user_id', $userId)->firstOrFail();
             $record->update($validated);
         }
 
-        return redirect()->route('opportunity.index');
+        return redirect()->route('opportunities.index', ['tab' => $type]);
     }
 }

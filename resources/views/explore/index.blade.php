@@ -4,7 +4,6 @@
 @section('menu', 'explore-program')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/explore-program.css') }}">
     @vite(['resources/css/explore-program.css', 'resources/js/explore-program.js'])
 @endpush
 
@@ -51,12 +50,12 @@
     <section class="program-grid" id="programGrid">
         @forelse ($programs as $prog)
             <div class="program-card"
-                data-title="{{ strtolower($prog['title']) }}"
-                data-type="{{ strtolower($prog['type']) }}"
-                data-category="{{ strtolower($prog['category']) }}">
+                data-title="{{ Str::lower($prog->title) }}"
+                data-type="{{ Str::lower($prog->type) }}"
+                data-category="{{ Str::lower($prog->category) }}">
                 <div class="card-image">
-                    <img src="{{ $prog['image'] }}" alt="{{ $prog['title'] }}">
-                    <span class="type-badge {{ strtolower($prog['type']) }}">{{ $prog['type'] }}</span>
+                    <img src="{{ $prog->image }}" alt="{{ $prog->title }}">
+                    <span class="type-badge {{ Str::lower($prog->type) }}">{{ $prog->type }}</span>
                     <button type="button" class="bookmark-btn" title="Simpan Bookmark">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
@@ -64,8 +63,8 @@
                     </button>
                 </div>
                 <div class="card-content">
-                    <h3 class="card-title">{{ $prog['title'] }}</h3>
-                    <p class="card-organizer">{{ $prog['organizer'] }}</p>
+                    <h3 class="card-title">{{ $prog->title }}</h3>
+                    <p class="card-organizer">{{ $prog->organizer }}</p>
 
                     <div class="card-meta">
                         <span class="meta-item">
@@ -73,7 +72,7 @@
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                 <circle cx="12" cy="10" r="3"></circle>
                             </svg>
-                            {{ $prog['location'] }}
+                            {{ $prog->location }}
                         </span>
                         <span class="meta-item">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -82,11 +81,11 @@
                                 <line x1="8" y1="2" x2="8" y2="6"></line>
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
-                            {{ $prog['date'] }}
+                            {{ $prog->date }}
                         </span>
                     </div>
 
-                    <p class="card-desc">{{ $prog['desc'] }}</p>
+                    <p class="card-desc">{{ $prog->desc }}</p>
 
                     {{-- Halaman detail program belum dikonversi --}}
                     <a href="#" class="detail-link">Lihat Detail &rarr;</a>

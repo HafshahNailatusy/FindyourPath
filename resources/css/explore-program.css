@@ -194,7 +194,7 @@ body {
 }
 
 .hero-banner {
-  background-image: url("../../../public/images/banner_illustration.png");
+  background-image: url("../../public/images/banner_illustration.png");
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;

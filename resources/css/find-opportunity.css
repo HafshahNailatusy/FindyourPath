@@ -139,7 +139,7 @@ body {
 }
 
 .page-content {
-  padding: 28px 40px 50px;
+  padding: 25px 25px 25px;
 }
 
 .opportunity-hero {
@@ -184,9 +184,9 @@ body {
   line-height: 1.7;
 }
 
-.hero-decoration {
+.hero-decoration li {
   position: absolute;
-  right: 80px;
+  padding: 10px 10px 10px;
   font-size: 150px;
   color: rgba(56, 143, 168, 0.16);
 }
@@ -615,9 +615,9 @@ body {
 }
 
 @media (max-width: 768px) {
-  .main-content {
+  /* .main-content {
     margin-left: 0 !important;
-  }
+  } */
 
   .header {
     height: 72px;
@@ -645,9 +645,10 @@ body {
     font-size: 21px;
   }
 
-  .hero-decoration {
-    right: 15px;
+  .hero-decoration li {
+    right: 50px;
     font-size: 90px;
+    padding: 10px 10px 10px;
   }
 
   .record-grid {
