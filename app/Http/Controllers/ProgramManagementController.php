@@ -20,10 +20,10 @@ class ProgramManagementController extends Controller
         $upcomingCount = 0;
         $finishedCount = 0;
 
-        if (Schema::hasTable('schedule_management')) {
-            $activeCount   = DB::table('schedule_management')->where('status', 'Aktif')->count();
-            $upcomingCount = DB::table('schedule_management')->where('status', 'Akan Datang')->count();
-            $finishedCount = DB::table('schedule_management')->where('status', 'Selesai')->count();
+        if (Schema::hasTable('schedules_management')) {
+            $activeCount   = DB::table('schedules_management')->where('status', 'Sedang Berjalan')->count();
+            $upcomingCount = DB::table('schedules_management')->where('status', 'Akan Datang')->count();
+            $finishedCount = DB::table('schedules_management')->where('status', 'Selesai')->count();
         }
 
         $stats = [
