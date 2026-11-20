@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Announcement Management - FindYourPath</title>
+    <link rel="icon" href="data:,">
     @vite(['resources/css/announcements.css', 'resources/js/announcements.js'])
 </head>
 <body>
 
-    {{-- Sidebar Admin --}}
     @includeIf('components.sidebar-admin', ['activeMenu' => 'announcement'])
 
     <div class="main-wrapper">
-        {{-- Top Header --}}
         <header class="header">
             <h1 class="header-title">Announcement Management</h1>
 
@@ -34,7 +33,6 @@
             </div>
         </header>
 
-        {{-- Main Content --}}
         <main class="main-content">
             <h2 class="greeting-title">Hi, {{ $adminName ?? 'Admin' }}!</h2>
             <p class="greeting-sub">Kelola dan publikasikan pengumuman penting untuk mahasiswa dalam satu tempat.</p>
@@ -51,10 +49,9 @@
                 </div>
             @endif
 
-            <div class="panel">
+            <div class="panel" style="background: linear-gradient(180deg, #F5FAFD 0%, #FFFFFF 36%); overflow: visible;">
                 <h3 class="panel-title">Daftar Pengumuman</h3>
 
-                {{-- Filter Bar --}}
                 <div class="filter-bar">
                     <div class="search-wrap">
                         <span class="search-icon">
@@ -100,7 +97,6 @@
                     </div>
                 </div>
 
-                {{-- Table Meta --}}
                 <div class="table-meta">
                     <div class="table-meta-left">
                         <span class="table-list-title">Announcement List</span>
@@ -117,8 +113,7 @@
                     </span>
                 </div>
 
-                {{-- Table --}}
-                <div class="table-wrap">
+                <div class="table-wrap" style="overflow: visible;">
                     <table class="reg-table" id="announcementTable">
                         <thead>
                             <tr>
@@ -161,8 +156,8 @@
                                     <td class="reg-date" data-raw-date="{{ $item->created_at ? $item->created_at->format('Y-m-d') : '' }}">
                                         {{ $formattedDate }}
                                     </td>
-                                    <td>
-                                        <div class="action-dropdown-wrap">
+                                    <td style="position: relative; overflow: visible;">
+                                        <div class="action-dropdown-wrap" style="position: relative; z-index: 30;">
                                             <button type="button" class="action-btn edit-menu-trigger" title="Opsi">
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                                     <circle cx="12" cy="5" r="2"></circle>
@@ -171,7 +166,7 @@
                                                 </svg>
                                             </button>
 
-                                            <div class="action-dropdown-menu">
+                                            <div class="action-dropdown-menu" style="z-index: 999; background: #FFFFFF;">
                                                 <button type="button"
                                                         class="dropdown-item dropdown-item--edit"
                                                         data-id="{{ $item->id_announcement }}"
@@ -208,7 +203,6 @@
                     </table>
                 </div>
 
-                {{-- Pagination --}}
                 <div class="pagination-bar">
                     <span class="pagination-info">
                         Halaman {{ $announcements->currentPage() }} dari {{ $announcements->lastPage() }}
@@ -240,9 +234,8 @@
         </main>
     </div>
 
-    {{-- Modal Tambah / Edit Announcement --}}
-    <div id="announcementModal" class="modal-overlay">
-        <div class="modal-box">
+    <div id="announcementModal" class="modal-overlay" style="z-index: 9999;">
+        <div class="modal-box" style="position: relative; z-index: 10000;">
             <div class="modal-header">
                 <h3 id="modalTitle" class="modal-title">Tambah Pengumuman</h3>
                 <button type="button" id="closeModalBtn" class="modal-close">&times;</button>

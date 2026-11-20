@@ -1,73 +1,120 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.querySelector('.search-input');
-    const tableRows = document.querySelectorAll('#dashboardTable tbody tr');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', function () {
-            const keyword = this.value.toLowerCase().trim();
-
-            tableRows.forEach(row => {
-                const titleCell = row.querySelector('.student-name');
-                const contentCell = row.querySelector('.date-cell');
-                const categoryCell = row.querySelector('.status-badge, .program-badge');
-
-                if (titleCell || contentCell || categoryCell) {
-                    const titleText = titleCell ? titleCell.textContent.toLowerCase() : '';
-                    const contentText = contentCell ? contentCell.textContent.toLowerCase() : '';
-                    const categoryText = categoryCell ? categoryCell.textContent.toLowerCase() : '';
-
-                    if (
-                        titleText.includes(keyword) ||
-                        contentText.includes(keyword) ||
-                        categoryText.includes(keyword)
-                    ) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                }
-            });
-        });
-    }
-
     const container = document.getElementById('chartSvgContainer');
+    const xAxisEl = document.getElementById('chartXAxis');
+    const chartArea = document.getElementById('studentTrendArea');
+    const btnPrev = document.getElementById('btnPrevMonth');
+    const btnNext = document.getElementById('btnNextMonth');
+    const rangeLabel = document.getElementById('chartMonthRange');
+
     if (container && typeof monthlyTrendData !== 'undefined') {
+        const labels = Object.keys(monthlyTrendData);
         const values = Object.values(monthlyTrendData);
         const maxVal = (typeof chartMaxY !== 'undefined' && chartMaxY > 0) ? chartMaxY : 4;
+        const activeMonth = (typeof currentMonthNum !== 'undefined') ? currentMonthNum : 11;
+        const visibleCount = Math.min(5, labels.length);
 
-        const width = container.clientWidth || 400;
-        const height = container.clientHeight || 160;
+        let startIndex = Math.max(0, Math.min(labels.length - visibleCount, activeMonth - visibleCount));
 
-        const stepX = width / values.length;
-        let points = [];
+        function renderTrendChart() {
+            const sliceLabels = labels.slice(startIndex, startIndex + visibleCount);
+            const sliceValues = values.slice(startIndex, startIndex + visibleCount);
 
-        values.forEach((val, idx) => {
-            const x = (idx * stepX) + (stepX / 2);
-            const y = height - ((val / maxVal) * height);
-            points.push({ x, y, val });
-        });
-
-        if (points.length > 0) {
-            let pathD = `M ${points[0].x} ${points[0].y}`;
-            for (let i = 1; i < points.length; i++) {
-                pathD += ` L ${points[i].x} ${points[i].y}`;
+            if (rangeLabel && sliceLabels.length > 0) {
+                rangeLabel.textContent = `${sliceLabels[0]} - ${sliceLabels[sliceLabels.length - 1]}`;
+            }
+            if (btnPrev) {
+                btnPrev.disabled = startIndex <= 0;
+                btnPrev.style.opacity = startIndex <= 0 ? '0.4' : '1';
+            }
+            if (btnNext) {
+                btnNext.disabled = startIndex >= labels.length - visibleCount;
+                btnNext.style.opacity = startIndex >= labels.length - visibleCount ? '0.4' : '1';
             }
 
-            let svgHtml = `
-                <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="overflow: visible;">
-                    <path d="${pathD}" fill="none" stroke="#4EACD4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            `;
+            if (xAxisEl) {
+                xAxisEl.innerHTML = sliceLabels.map(lbl => `<span>${lbl}</span>`).join('');
+            }
 
-            points.forEach((p) => {
-                svgHtml += `
-                    <circle cx="${p.x}" cy="${p.y}" r="5" fill="#ffffff" stroke="#4EACD4" stroke-width="3" />
-                    <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" font-size="10" font-weight="600" fill="#27566A">${p.val}</text>
-                `;
+            const width = container.clientWidth || 400;
+            const height = container.clientHeight || 160;
+            const stepX = width / sliceValues.length;
+            let points = [];
+
+            sliceValues.forEach((val, idx) => {
+                const x = (idx * stepX) + (stepX / 2);
+                const y = height - ((val / maxVal) * height);
+                points.push({ x, y, val });
             });
 
-            svgHtml += `</svg>`;
-            container.innerHTML = svgHtml;
+            if (points.length > 0) {
+                let pathD = `M ${points[0].x} ${points[0].y}`;
+                for (let i = 1; i < points.length; i++) {
+                    pathD += ` L ${points[i].x} ${points[i].y}`;
+                }
+
+                const areaPathD = `${pathD} L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;
+
+                let svgHtml = `
+                    <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="overflow: visible;">
+                        <defs>
+                            <linearGradient id="blueToWhiteGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#4EACD4" stop-opacity="0.22" />
+                                <stop offset="60%" stop-color="#CBE9F6" stop-opacity="0.08" />
+                                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" />
+                            </linearGradient>
+                        </defs>
+                        <path d="${areaPathD}" fill="url(#blueToWhiteGrad)" />
+                        <path d="${pathD}" fill="none" stroke="#4EACD4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                `;
+
+                points.forEach((p) => {
+                    svgHtml += `
+                        <circle cx="${p.x}" cy="${p.y}" r="5" fill="#ffffff" stroke="#4EACD4" stroke-width="3" />
+                        <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" font-size="10" font-weight="600" fill="#27566A">${p.val}</text>
+                    `;
+                });
+
+                svgHtml += `</svg>`;
+                container.innerHTML = svgHtml;
+            }
         }
+
+        if (btnPrev) {
+            btnPrev.addEventListener('click', function () {
+                if (startIndex > 0) {
+                    startIndex--;
+                    renderTrendChart();
+                }
+            });
+        }
+
+        if (btnNext) {
+            btnNext.addEventListener('click', function () {
+                if (startIndex < labels.length - visibleCount) {
+                    startIndex++;
+                    renderTrendChart();
+                }
+            });
+        }
+
+        if (chartArea) {
+            chartArea.addEventListener('wheel', function (e) {
+                if (Math.abs(e.deltaX) > 8 || Math.abs(e.deltaY) > 8) {
+                    e.preventDefault();
+                    const dir = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                    if (dir > 0 && startIndex < labels.length - visibleCount) {
+                        startIndex++;
+                        renderTrendChart();
+                    } else if (dir < 0 && startIndex > 0) {
+                        startIndex--;
+                        renderTrendChart();
+                    }
+                }
+            }, { passive: false });
+        }
+
+        window.addEventListener('resize', renderTrendChart);
+        renderTrendChart();
     }
 
     const notifBtn = document.querySelector('.header-notif');

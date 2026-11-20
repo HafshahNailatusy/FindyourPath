@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DashboardAdmin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardAdminController extends Controller
 {
@@ -14,47 +15,55 @@ class DashboardAdminController extends Controller
         $this->model = new DashboardAdmin();
     }
 
-    public function index()
+    public function index(Request $request)
     {
         // Kartu 1: Total Program (id_program)
         $totalProgram  = $this->model->getTotalPrograms();
         $programGrowth = $this->model->getProgramGrowthPercentage();
 
-        // Kartu 2 & 3: Total Lomba & Total Beasiswa dikosongkan sementara sesuai permintaan
-        $totalLomba     = 0;
-        $lombaGrowth    = 0;
-        $totalBeasiswa  = 0;
-        $beasiswaGrowth = 0;
+        // Kartu 2: Total Schedule (id_schedule)
+        $totalSchedule  = $this->model->getTotalSchedules();
+        $scheduleGrowth = $this->model->getScheduleGrowthPercentage();
 
-        // Kartu 4: Total Mahasiswa Aktif (terhubung ke id_mahasiswa)
+        // Kartu 3: Radar Agenda / Deadline Terdekat (pengingat buat admin)
+        $nearestSchedule = $this->model->getNearestScheduleReminder();
+
+        // Kartu 4: Total Mahasiswa Aktif (terhubung ke students.id)
         $totalMahasiswa  = $this->model->getTotalActiveStudents();
         $mahasiswaGrowth = $this->model->getStudentGrowthPercentage();
 
-        // Grafik Line: Tren Mahasiswa 5 Bulan Terakhir
-        $monthlyTrends = $this->model->getMonthlyStudentTrends();
+        // Filter Tahun & Grafik Line 12 Bulan
+        $availableYears = $this->model->getAvailableYears();
+        $selectedYear   = (int) $request->query('year', date('Y'));
+        if (!in_array($selectedYear, $availableYears)) {
+            $availableYears[] = $selectedYear;
+            rsort($availableYears);
+        }
+
+        $monthlyTrends = $this->model->getMonthlyStudentTrends($selectedYear);
         $maxTrendVal   = !empty($monthlyTrends) ? max($monthlyTrends) : 0;
         $chartMaxY     = $maxTrendVal > 0 ? (int) (ceil($maxTrendVal / 4) * 4) : 4;
 
         // Donut Chart: Distribusi Program berdasarkan Bidang
-        $distribusi        = $this->model->getProgramDistributionByField();
-        $bidangPrograms    = $distribusi['items'];
+        $distribusi         = $this->model->getProgramDistributionByField();
+        $bidangPrograms     = $distribusi['items'];
         $totalBidangProgram = $distribusi['grandTotal'];
 
-        // Tabel Bawah: Pengumuman Terbaru
-        $recentAnnouncements = $this->model->getRecentAnnouncements(5);
+            $recentAnnouncements = $this->model->getRecentAnnouncements(5);
 
         $activeMenu = 'dashboard';
-        $adminName  = auth()->user()->name ?? session('user.name', 'Admin');
+        $adminName  = Auth::user()?->name ?? session('user.name', 'Admin');
 
         return view('admin.dashboard-admin.index', compact(
             'totalProgram',
             'programGrowth',
-            'totalLomba',
-            'lombaGrowth',
-            'totalBeasiswa',
-            'beasiswaGrowth',
+            'totalSchedule',
+            'scheduleGrowth',
+            'nearestSchedule',
             'totalMahasiswa',
             'mahasiswaGrowth',
+            'availableYears',
+            'selectedYear',
             'monthlyTrends',
             'chartMaxY',
             'bidangPrograms',

@@ -4,27 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - FindYourPath</title>
+    <link rel="icon" href="data:,">
     @vite(['resources/css/admin-dashboard.css', 'resources/js/admin-dashboard.js'])
 </head>
 <body>
 
-    {{-- Sidebar Admin --}}
     @includeIf('components.sidebar-admin', ['activeMenu' => 'dashboard'])
 
     <div class="main-wrapper">
-        {{-- Top Header --}}
         <header class="header">
             <h1 class="header-title">Dashboard Admin</h1>
-
-            <div class="search-box">
-                <span class="search-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </span>
-                <input type="text" class="search-input" placeholder="Cari pengumuman terbaru...">
-            </div>
 
             <div class="header-right">
                 <button type="button" class="header-notif" title="Notifikasi">
@@ -44,15 +33,12 @@
             </div>
         </header>
 
-        {{-- Main Content --}}
         <main class="main-content">
             <h2 class="greeting-title">Hi, {{ $adminName ?? 'Admin' }}!</h2>
             <p class="greeting-sub">Ringkasan data program, pengguna mahasiswa, dan pengumuman FindYourPath.</p>
 
-            {{-- 4 Stat Cards --}}
             <div class="stats-grid">
-                {{-- Card 1: Total Program (id_program) --}}
-                <div class="stat-card">
+                 <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-title">Total Program</span>
                         <div class="stat-card-icon">
@@ -67,45 +53,46 @@
                     </div>
                 </div>
 
-                {{-- Card 2: Total Lomba (Dikosongkan sementara) --}}
                 <div class="stat-card">
                     <div class="stat-card-header">
-                        <span class="stat-card-title">Total Lomba</span>
+                        <span class="stat-card-title">Total Schedule</span>
                         <div class="stat-card-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                                <path d="M4 22h16"></path>
-                                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
                         </div>
                     </div>
-                    <div class="stat-card-value">-</div>
+                    <div class="stat-card-value">{{ $totalSchedule }}</div>
                     <div class="stat-card-trend">
-                        Belum terhubung ke data
+                        <span class="trend-up">&#8599; {{ $scheduleGrowth }}%</span> dari bulan lalu
                     </div>
                 </div>
 
-                {{-- Card 3: Total Beasiswa (Dikosongkan sementara) --}}
                 <div class="stat-card">
                     <div class="stat-card-header">
-                        <span class="stat-card-title">Total Beasiswa</span>
+                        <span class="stat-card-title">Schedule Terdekat</span>
                         <div class="stat-card-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
                         </div>
                     </div>
-                    <div class="stat-card-value">-</div>
-                    <div class="stat-card-trend">
-                        Belum terhubung ke data
+                    <div class="stat-card-value" style="{{ ($nearestSchedule['isUrgent'] ?? false) ? 'color: #1E293B;' : '' }}">
+                        {{ $nearestSchedule['badgeText'] ?? '-' }}
                     </div>
-                </div>
+                    <div class="stat-card-trend" title="{{ $nearestSchedule['fullList'] ?? '' }}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        {{ $nearestSchedule['label'] ?? 'Tidak ada agenda mendatang' }}
+                            @if(($nearestSchedule['extraCount'] ?? 0) > 0)
+                        <span class="trend-up" style="font-weight: 600;">+{{ $nearestSchedule['extraCount'] }}</span>
+                            @endif
+                    </div>
+            </div>
 
-                {{-- Card 4: Total Mahasiswa Aktif (id_mahasiswa) --}}
+                {{-- Kartu 4: Total Mahasiswa Aktif --}}
                 <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-title">Total Mahasiswa Aktif</span>
@@ -125,14 +112,32 @@
                 </div>
             </div>
 
-            {{-- Charts Grid --}}
             <div class="charts-grid">
-                {{-- Line Chart: Tren Mahasiswa Terdaftar / Login --}}
-                <div class="chart-card">
-                    <div class="chart-title">Tren Mahasiswa FindYourPath</div>
-                    <div class="chart-subtitle">Grafik akun mahasiswa yang terdaftar dalam 5 bulan terakhir</div>
+                <div class="chart-card" style="background: linear-gradient(180deg, #F5FAFD 0%, #FFFFFF 42%);">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:14px;">
+                        <div>
+                            <div class="chart-title">Tren Mahasiswa FindYourPath</div>
+                            <div class="chart-subtitle" style="margin-bottom:0;">Grafik akun mahasiswa terdaftar tahun <strong>{{ $selectedYear ?? date('Y') }}</strong></div>
+                        </div>
 
-                    <div class="chart-area">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <form method="GET" action="{{ route('admin.dashboard') }}" style="margin:0;">
+                                <select name="year" onchange="this.form.submit()" style="padding:5px 10px; border:1px solid #E2E8F0; border-radius:8px; font-size:12px; font-weight:600; color:#334155; background:#FFFFFF; cursor:pointer; outline:none;">
+                                    @foreach(($availableYears ?? range(date('Y') + 1, 2022)) as $yr)
+                                        <option value="{{ $yr }}" {{ $yr == ($selectedYear ?? date('Y')) ? 'selected' : '' }}>{{ $yr }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+
+                            <div style="display:flex; align-items:center; gap:4px;">
+                                <button type="button" id="btnPrevMonth" title="Geser bulan sebelumnya" style="width:28px; height:28px; border:1px solid #E2E8F0; border-radius:8px; background:#FFFFFF; color:#334155; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;">&#8249;</button>
+                                <span id="chartMonthRange" style="font-size:12px; font-weight:600; color:#64748B; min-width:68px; text-align:center;">Jul - Nov</span>
+                                <button type="button" id="btnNextMonth" title="Geser bulan berikutnya" style="width:28px; height:28px; border:1px solid #E2E8F0; border-radius:8px; background:#FFFFFF; color:#334155; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center;">&#8250;</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-area" id="studentTrendArea" style="cursor: grab;">
                         <div class="chart-y-axis">
                             <span>{{ $chartMaxY }}</span>
                             <span>{{ (int) ($chartMaxY * 0.75) }}</span>
@@ -148,15 +153,14 @@
 
                         <div id="chartSvgContainer" class="chart-svg-container"></div>
 
-                        <div class="chart-x-axis">
-                            @foreach(array_keys($monthlyTrends) as $bulanLabel)
+                        <div class="chart-x-axis" id="chartXAxis">
+                            @foreach(array_slice(array_keys($monthlyTrends), -5) as $bulanLabel)
                                 <span>{{ $bulanLabel }}</span>
                             @endforeach
                         </div>
                     </div>
                 </div>
 
-                {{-- Donut Chart: Bidang Program --}}
                 <div class="category-card">
                     <div class="chart-title">Bidang Program</div>
                     <div class="chart-subtitle">Distribusi program berdasarkan bidang</div>
@@ -199,7 +203,6 @@
                 </div>
             </div>
 
-            {{-- Bottom Table: Announcement Terbaru --}}
             <div class="table-card">
                 <div class="table-card-header">
                     <div>
@@ -255,6 +258,7 @@
     <script>
         const monthlyTrendData = @json($monthlyTrends);
         const chartMaxY = {{ $chartMaxY }};
+        const currentMonthNum = {{ (int) date('n') }};
     </script>
 </body>
 </html>
