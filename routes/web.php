@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\AdminProfileController;
 use App\Http\Controllers\ScheduleManagementController;
+use App\Http\Controllers\DashboardUserController; 
 
 
 Route::redirect('/', '/login');
@@ -30,8 +31,9 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
 Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
-    Route::view('/dashboard', 'mahasiswa.placeholder', ['title' => 'Dashboard', 'menu' => 'dashboard'])
+    Route::get('/dashboard', [DashboardUserController::class, 'index'])
         ->name('mahasiswa.dashboard');
+    Route::get('/dashboard-user', [DashboardUserController::class, 'index']);
     Route::view('/profile', 'mahasiswa.placeholder', ['title' => 'Profile', 'menu' => 'profile'])
         ->name('mahasiswa.profile');
 

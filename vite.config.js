@@ -25,6 +25,7 @@ export default defineConfig({
                 'resources/js/adminProfile.js',
                 'resources/css/schedule-management.css',
                 'resources/js/schedule-management.js',
+                'resources/css/dashboardUser.css',
             ],
             refresh: true,
             fonts: [
