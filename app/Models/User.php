@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -10,8 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 #[Fillable(['name', 'username', 'email', 'password', 'role'])]
 #[Hidden(['password'])]
-class User extends Authenticatable
-{
+class User extends Authenticatable {
     public const ROLE_ADMIN = 'admin';
     public const ROLE_MAHASISWA = 'mahasiswa';
 

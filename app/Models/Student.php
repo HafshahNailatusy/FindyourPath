@@ -5,9 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Student extends Model
-{
-    protected $table = 'students';
+class Student extends Model {
+    protected $table = 'mahasiswa';
     public $timestamps = false;
 
     protected $fillable = [
@@ -15,8 +14,7 @@ class Student extends Model
         'university', 'faculty', 'major', 'year', 'semester', 'gpa', 'avatar',
     ];
 
-    public function user(): BelongsTo
-    {
+    public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 }
