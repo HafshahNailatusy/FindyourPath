@@ -184,8 +184,7 @@ body {
   line-height: 1.7;
 }
 
-.hero-decoration li {
-  position: absolute;
+.hero-decoration i {
   padding: 10px 10px 10px;
   font-size: 150px;
   color: rgba(56, 143, 168, 0.16);
@@ -645,11 +644,11 @@ body {
     font-size: 21px;
   }
 
-  .hero-decoration li {
-    right: 50px;
-    font-size: 90px;
-    padding: 10px 10px 10px;
-  }
+  /* .hero-decoration i {
+    right: 90px;
+    font-size: 40px;
+    padding: 50px 50px 50px;
+  } */
 
   .record-grid {
     grid-template-columns: 1fr;

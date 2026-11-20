@@ -27,10 +27,6 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
-
 Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
     Route::view('/dashboard', 'mahasiswa.placeholder', ['title' => 'Dashboard', 'menu' => 'dashboard'])
         ->name('mahasiswa.dashboard');
