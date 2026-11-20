@@ -16,53 +16,7 @@
 
 <body>
     <div class="layout-wrapper">
-
-        <aside class="fyp-sidebar" id="fypSidebar">
-            <div class="sidebar-header">
-                <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-                    <img src="{{ asset('images/LOGO.png') }}" alt="FindYourPath Logo" class="brand-logo">
-                </a>
-            </div>
-
-            <nav class="sidebar-nav">
-                <ul class="nav-list">
-                    <li class="nav-item">
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
-                            <span class="nav-title">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('admin.program-management.index') }}" class="nav-link active">
-                            <span class="nav-title">Program</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span class="nav-title">Schedule</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span class="nav-title">Registration</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <span class="nav-title">Profile</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="sidebar-footer">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="nav-link logout-btn">
-                        <span class="nav-title">Keluar</span>
-                    </button>
-                </form>
-            </div>
-        </aside>
+        @includeIf('components.sidebar-admin', ['activeMenu' => 'program'])
 
         <div class="main-wrapper">
             <header class="header">
@@ -94,7 +48,7 @@
                 @endif
 
                 <section class="pm-welcome-section">
-                    <h2 class="pm-welcome-title">Hi, Admin!</h2>
+                    <h2 class="pm-welcome-title">Hi, {{ $adminName ?? 'Admin' }}</h2>
                     <p class="pm-welcome-subtitle">Kelola informasi program, lomba, dan beasiswa dalam satu tempat.</p>
                 </section>
 

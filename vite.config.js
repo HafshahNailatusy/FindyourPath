@@ -7,6 +7,8 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
                 'resources/css/login.css',
                 'resources/js/login.js',
                 'resources/css/register.css',
@@ -26,6 +28,10 @@ export default defineConfig({
                 'resources/css/schedule-management.css',
                 'resources/js/schedule-management.js',
                 'resources/css/dashboardUser.css',
+                'resources/css/admin-dashboard.css',
+                'resources/js/admin-dashboard.js',
+                'resources/css/announcements.css',
+                'resources/js/announcements.js'
             ],
             refresh: true,
             fonts: [

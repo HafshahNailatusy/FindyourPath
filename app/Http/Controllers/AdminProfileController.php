@@ -9,7 +9,7 @@ class AdminProfileController extends Controller
 {
     public function index()
     {
-        $user = auth()->user()->load('admins');
+        $user = auth()->user()->load('admin');
         return view('admin.admin-profile.index', compact('user'));
     }
 
