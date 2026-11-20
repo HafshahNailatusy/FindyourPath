@@ -7,6 +7,8 @@ use App\Http\Controllers\ProgramManagementController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardAdminController;
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\AdminProfileController;
+use App\Http\Controllers\ScheduleManagementController;
 
 
 Route::redirect('/', '/login');
@@ -58,4 +60,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
             'update'  => 'admin.program-management.update',
             'destroy' => 'admin.program-management.destroy',
         ]);
+
+    Route::get('/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::post('/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+    Route::delete('/profile/avatar', [AdminProfileController::class, 'deleteAvatar'])->name('admin.profile.avatar.delete');
+
+    Route::get('/schedule', [ScheduleManagementController::class, 'index'])->name('admin.schedule.index');
+    Route::post('/schedule', [ScheduleManagementController::class, 'store'])->name('admin.schedule.store');
+    Route::put('/schedule/{id}', [ScheduleManagementController::class, 'update'])->name('admin.schedule.update');
+    Route::delete('/schedule/{id}', [ScheduleManagementController::class, 'destroy'])->name('admin.schedule.destroy');
 });

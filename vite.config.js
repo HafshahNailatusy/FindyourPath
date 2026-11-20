@@ -19,6 +19,12 @@ export default defineConfig({
                 'resources/js/explore-program.js',
                 'resources/css/programManagement.css',
                 'resources/js/programManagement.js',
+                'resources/css/sidebarAdmin.css',
+                'resources/js/sidebarAdmin.js',
+                'resources/css/adminProfile.css',
+                'resources/js/adminProfile.js',
+                'resources/css/schedule-management.css',
+                'resources/js/schedule-management.js',
             ],
             refresh: true,
             fonts: [
