@@ -1,53 +1,67 @@
 <?php
 
-require_once __DIR__ . '/../Models/DashboardAdmin.php';
-require_once __DIR__ . '/sidebarAdminController.php';
+namespace App\Http\Controllers;
 
-class DashboardAdminController
+use App\Models\DashboardAdmin;
+use Illuminate\Http\Request;
+
+class DashboardAdminController extends Controller
 {
-    private $pdo;
-    private string $baseUrl;
-    private $model;
+    protected DashboardAdmin $model;
 
-    public function __construct($pdo, string $baseUrl = '')
+    public function __construct()
     {
-        $this->pdo     = $pdo;
-        $this->baseUrl = $baseUrl;
-        $this->model   = new DashboardAdmin($pdo);
+        $this->model = new DashboardAdmin();
     }
 
     public function index()
     {
-        // Proteksi akses khusus Admin
-        $role = strtolower(trim($_SESSION['user']['role'] ?? ''));
-        if ($role !== 'admin') {
-            header("Location: " . $this->baseUrl . "/public/index.php?page=login");
-            exit;
-        }
+        // Kartu 1: Total Program (id_program)
+        $totalProgram  = $this->model->getTotalPrograms();
+        $programGrowth = $this->model->getProgramGrowthPercentage();
 
-        // Ambil seluruh metrik real dari database
-        $totalProgram        = $this->model->getTotalPrograms();
-        $programGrowth       = $this->model->getProgramGrowthPercentage();
+        // Kartu 2 & 3: Total Lomba & Total Beasiswa dikosongkan sementara sesuai permintaan
+        $totalLomba     = 0;
+        $lombaGrowth    = 0;
+        $totalBeasiswa  = 0;
+        $beasiswaGrowth = 0;
 
-        $distribusi          = $this->model->getProgramDistributionByType();
-        $jenisPrograms       = $distribusi['items'];
-        $totalJenisProgram   = $distribusi['grandTotal'];
+        // Kartu 4: Total Mahasiswa Aktif (terhubung ke id_mahasiswa)
+        $totalMahasiswa  = $this->model->getTotalActiveStudents();
+        $mahasiswaGrowth = $this->model->getStudentGrowthPercentage();
 
-        // Ambil 2 jenis program terbanyak untuk 2 kartu dinamis di atas
-        $topJenis1 = $jenisPrograms[0] ?? ['label' => 'Lomba', 'total' => 0, 'growth' => 0];
-        $topJenis2 = $jenisPrograms[1] ?? ['label' => 'Beasiswa', 'total' => 0, 'growth' => 0];
+        // Grafik Line: Tren Mahasiswa 5 Bulan Terakhir
+        $monthlyTrends = $this->model->getMonthlyStudentTrends();
+        $maxTrendVal   = !empty($monthlyTrends) ? max($monthlyTrends) : 0;
+        $chartMaxY     = $maxTrendVal > 0 ? (int) (ceil($maxTrendVal / 4) * 4) : 4;
 
-        $totalPendaftar      = $this->model->getTotalRegistrations();
-        $pendaftarGrowth     = $this->model->getRegistrationGrowthPercentage();
+        // Donut Chart: Distribusi Program berdasarkan Bidang
+        $distribusi        = $this->model->getProgramDistributionByField();
+        $bidangPrograms    = $distribusi['items'];
+        $totalBidangProgram = $distribusi['grandTotal'];
 
-        $monthlyTrends       = $this->model->getMonthlyRegistrationTrends();
-        $recentRegistrations = $this->model->getRecentRegistrations(5);
+        // Tabel Bawah: Pengumuman Terbaru
+        $recentAnnouncements = $this->model->getRecentAnnouncements(5);
 
-        // Variabel pendukung View & SidebarController
-        $baseUrl    = $this->baseUrl;
         $activeMenu = 'dashboard';
-        $adminName  = $_SESSION['user']['name'] ?? 'Admin';
+        $adminName  = auth()->user()->name ?? session('user.name', 'Admin');
 
-        require_once __DIR__ . '/../Views/dashboard-admin/dashboardAdmin.php';
+        return view('admin.dashboard-admin.index', compact(
+            'totalProgram',
+            'programGrowth',
+            'totalLomba',
+            'lombaGrowth',
+            'totalBeasiswa',
+            'beasiswaGrowth',
+            'totalMahasiswa',
+            'mahasiswaGrowth',
+            'monthlyTrends',
+            'chartMaxY',
+            'bidangPrograms',
+            'totalBidangProgram',
+            'recentAnnouncements',
+            'activeMenu',
+            'adminName'
+        ));
     }
 }

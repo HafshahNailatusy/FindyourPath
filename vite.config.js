@@ -17,6 +17,8 @@ export default defineConfig({
                 'resources/js/find-opportunity.js',
                 'resources/css/explore-program.css',
                 'resources/js/explore-program.js',
+                'resources/css/programManagement.css',
+                'resources/js/programManagement.js',
             ],
             refresh: true,
             fonts: [
