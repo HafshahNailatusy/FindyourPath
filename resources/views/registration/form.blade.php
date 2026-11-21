@@ -52,17 +52,15 @@
         @endif
 
         <div class="program-info">
-            <h2>{{ $program->judul }}</h2>
+            <h2>{{ $program->nama_program }}</h2>
             <p>Penyelenggara: {{ $program->penyelenggara }}</p>
-            <p>Kategori: {{ $program->kategori }}</p>
-        </div>
+            <p>Kategori: {{ $program->bidang }}</p>        </div>
 
         <form
             id="registrationForm"
             class="form-card"
             novalidate
-            action="{{ route('registrations.store', $program->id) }}"
-            method="POST"
+action="{{ route('registrations.store', $program->id_program) }}"            method="POST"
             enctype="multipart/form-data"
         >
             @csrf
@@ -135,7 +133,7 @@
                 @enderror
             </div>
 
-            @if ($program->biaya > 0)
+            {{-- @if ($program->biaya > 0)
                 <h3>Bukti Pembayaran</h3>
 
                 <div class="form-group">
@@ -168,7 +166,7 @@
                         Format PDF, JPG, atau PNG. Maksimal 100 MB.
                     </small>
                 </div>
-            @endif
+            @endif --}}
 
             @if (!empty($documents) && count($documents) > 0)
                 <h3>Dokumen Persyaratan</h3>
@@ -212,7 +210,7 @@
                 <h3>{{ $riwayat->nama_program ?? 'Program' }}</h3>
 
                 <p>Kode: {{ $riwayat->registration_code }}</p>
-                <p>Kategori: {{ $riwayat->kategori ?? '-' }}</p>
+                <p>Kategori: {{ $riwayat->bidang ?? '-' }}</p>
                 <p>
                     Tanggal:
                     {{ $riwayat->registered_at?->format('d-m-Y') ?? '-' }}

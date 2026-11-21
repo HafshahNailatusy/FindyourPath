@@ -7,26 +7,26 @@ use Illuminate\Support\Facades\DB;
 class ProfileUser {
     public function getByUserId(int $userId): ?object {
         return DB::table('users as u')
-            ->join('mahasiswa as m', 'm.user_id', '=', 'u.id')
+            ->join('students as s', 's.user_id', '=', 'u.id')
             ->where('u.id', $userId)
             ->select([
                 'u.id as user_id',
                 'u.name',
                 'u.email',
                 'u.username',
-                'm.id as mahasiswa_id',
-                'm.nim',
-                'm.phone',
-                'm.address',
-                'm.gender',
-                'm.birth_date',
-                'm.university',
-                'm.faculty',
-                'm.major',
-                'm.year',
-                'm.semester',
-                'm.gpa',
-                'm.avatar',
+                's.id as student_id',
+                's.nim',
+                's.phone',
+                's.address',
+                's.gender',
+                's.birth_date',
+                's.university',
+                's.faculty',
+                's.major',
+                's.year',
+                's.semester',
+                's.gpa',
+                's.avatar',
             ])
             ->first();
     }
@@ -44,7 +44,7 @@ class ProfileUser {
             $userId, $name, $nim, $phone,
             $address, $gender, $birthDate
         ) {
-            $nimExists = DB::table('mahasiswa')
+            $nimExists = DB::table('students')
                 ->where('nim', $nim)
                 ->where('user_id', '!=', $userId)
                 ->exists();
@@ -59,7 +59,7 @@ class ProfileUser {
                 ->where('id', $userId)
                 ->update(['name' => $name]);
 
-            DB::table('mahasiswa')
+            DB::table('students')
                 ->where('user_id', $userId)
                 ->update([
                     'nim' => $nim,
@@ -80,7 +80,7 @@ class ProfileUser {
         int $semester,
         float $gpa
     ): void {
-        DB::table('mahasiswa')
+        DB::table('students')
             ->where('user_id', $userId)
             ->update([
                 'university' => $university,

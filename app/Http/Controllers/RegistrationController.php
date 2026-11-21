@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Registration;
-use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -14,14 +13,10 @@ use Illuminate\Http\RedirectResponse;
 class RegistrationController extends Controller {
 
     public function create(int $programId): View|RedirectResponse {
-        $student = DB::table('mahasiswa')
-            ->where('user_id', auth()->id())
-            ->first();
-
-        abort_if(!$student, 403, 'Data mahasiswa tidak ditemukan.');
-
-        $program = DB::table('program')
-            ->where('id', $programId)
+        $user = auth()->user();
+        $userId = $user->id;
+        $program = DB::table('program_management')
+            ->where('id_program', $programId)
             ->first();
 
         abort_if(!$program, 404, 'Program tidak ditemukan.');
@@ -33,7 +28,7 @@ class RegistrationController extends Controller {
             ->get();
 
         $existingRegistration = Registration::getExistingRegistration(
-            $student->id,
+            $user->id,
             $programId
         );
 
@@ -45,16 +40,16 @@ class RegistrationController extends Controller {
 
         $riwayatPendaftaran = DB::table('registrations')
             ->leftJoin(
-                'program',
+                'program_management',
                 'registrations.program_id',
                 '=',
-                'program.id'
+                'program_management.id_program'
             )
-            ->where('registrations.student_id', $student->id)
+            ->where('registrations.student_id', $userId)
             ->select(
                 'registrations.*',
-                'program.judul as nama_program',
-                'program.kategori'
+                'program_management.nama_program as nama_program',
+                'program_management.bidang'
             )
             ->orderByDesc('registrations.registered_at')
             ->get();
@@ -68,24 +63,17 @@ class RegistrationController extends Controller {
     }
 
     public function store(Request $request, int $programId): RedirectResponse {
-        $student = DB::table('mahasiswa')
-            ->where('user_id', auth()->id())
-            ->first();
+        $user = auth()->user();
+        $userId = $user->id;
 
-        abort_if(!$student, 403, 'Data mahasiswa tidak ditemukan.');
-
-        $program = DB::table('program')
-            ->where('id', $programId)
+        $program = DB::table('program_management')
+            ->where('id_program', $programId)
             ->first();
 
         abort_if(!$program, 404, 'Program tidak ditemukan.');
 
-        if (strtolower(trim($program->status ?? '')) !== 'dibuka') {
-            return back()->with('error', 'Pendaftaran program sedang ditutup.');
-        }
-
         $existing = Registration::getExistingRegistration(
-            $student->id,
+            $userId,
             $programId
         );
 
@@ -106,13 +94,6 @@ class RegistrationController extends Controller {
                 'mimes:pdf,jpg,jpeg,png',
                 'max:102400',
             ],
-
-            'bukti_pembayaran' => [
-                $program->biaya > 0 ? 'required' : 'nullable',
-                'file',
-                'mimes:pdf,jpg,jpeg,png',
-                'max:102400',
-            ],
         ]);
 
         $requiredDocuments = DB::table('program_detail')
@@ -125,30 +106,7 @@ class RegistrationController extends Controller {
         }
 
         $uploadedFiles = [];
-        $paymentProofPath = null;
-
         try {
-            if ($program->biaya > 0) {
-                $paymentFile = $request->file('bukti_pembayaran');
-
-                if (!$paymentFile || !$paymentFile->isValid()) {
-                    throw new \RuntimeException(
-                        'Bukti pembayaran wajib diunggah.'
-                    );
-                }
-
-                $paymentProofPath = $paymentFile->store(
-                    'bukti-pembayaran',
-                    'public'
-                );
-
-                if (!$paymentProofPath) {
-                    throw new \RuntimeException(
-                        'Gagal menyimpan bukti pembayaran.'
-                    );
-                }
-            }
-
             foreach ($requiredDocuments as $document) {
                 $file = $request->file('documents.' . $document->id);
 
@@ -177,23 +135,16 @@ class RegistrationController extends Controller {
 
             $registration = Registration::createRegistration([
                 'program_id' => $programId,
-                'student_id' => $student->id,
+                'student_id' => $userId,
                 'full_name' => auth()->user()->name,
                 'email' => auth()->user()->email,
                 'phone' => $validated['phone'],
                 'university' => $validated['university'],
                 'study_program' => $validated['study_program'],
                 'reason' => $validated['reason'],
-                'payment_proof' => $paymentProofPath,
-                'payment_status' => $paymentProofPath
-                    ? 'Menunggu Verifikasi'
-                    : null,
             ], $uploadedFiles);
 
         } catch (\Throwable $error) {
-            if ($paymentProofPath) {
-                Storage::disk('public')->delete($paymentProofPath);
-            }
 
             foreach ($uploadedFiles as $file) {
                 Storage::disk('public')->delete($file['file_path']);
@@ -217,21 +168,18 @@ class RegistrationController extends Controller {
     }
 
     public function edit(int $registrationId): View {
-        $student = DB::table('mahasiswa')
-            ->where('user_id', auth()->id())
-            ->first();
-
-        abort_if(!$student, 403, 'Data mahasiswa tidak ditemukan.');
+    $user = auth()->user();
+    $userId = $user->id;
 
         $pendaftaran = Registration::getByIdForStudent(
             $registrationId,
-            $student->id
+            $userId
         );
 
         abort_if(!$pendaftaran, 404, 'Pendaftaran tidak ditemukan.');
 
-        $program = DB::table('program')
-            ->where('id', $pendaftaran->program_id)
+        $program = DB::table('program_management')
+            ->where('id_program', $pendaftaran->program_id)
             ->first();
 
         $canEdit = $pendaftaran->status === 'Menunggu Verifikasi';
@@ -244,15 +192,12 @@ class RegistrationController extends Controller {
     }
 
     public function update(Request $request, int $registrationId): RedirectResponse {
-        $student = DB::table('mahasiswa')
-            ->where('user_id', auth()->id())
-            ->first();
-
-        abort_if(!$student, 403, 'Data mahasiswa tidak ditemukan.');
+        $user = auth()->user();
+        $userId = $user->id;
 
         $pendaftaran = Registration::getByIdForStudent(
             $registrationId,
-            $student->id
+            $userId
         );
 
         abort_if(!$pendaftaran, 404, 'Pendaftaran tidak ditemukan.');
@@ -274,15 +219,12 @@ class RegistrationController extends Controller {
     }
 
     public function cancel(int $registrationId): RedirectResponse {
-        $student = DB::table('mahasiswa')
-            ->where('user_id', auth()->id())
-            ->first();
-
-        abort_if(!$student, 403, 'Data mahasiswa tidak ditemukan.');
+        $user = auth()->user();
+        $userId = $user->id;
 
         $pendaftaran = Registration::getByIdForStudent(
             $registrationId,
-            $student->id
+            $userId
         );
 
         abort_if(!$pendaftaran, 404, 'Pendaftaran tidak ditemukan.');
@@ -300,25 +242,21 @@ class RegistrationController extends Controller {
     }
 
     public function index(): View {
-        $student = DB::table('mahasiswa')
-            ->where('user_id', auth()->id())
-            ->first();
-
-        abort_if(!$student, 403, 'Data mahasiswa tidak ditemukan.');
+        $user = auth()->user();
+        $userId = $user->id;
 
         $riwayatPendaftaran = DB::table('registrations')
             ->leftJoin(
-                'program',
+                'program_management',
                 'registrations.program_id',
                 '=',
-                'program.id'
+                'program_management.id_program'
             )
-            ->where('registrations.student_id', $student->id)
+            ->where('registrations.student_id', $userId)
             ->select(
                 'registrations.*',
-                'program.judul as nama_program',
-                'program.kategori',
-                'program.biaya as biaya_program'
+                'program_management.nama_program as nama_program',
+                'program_management.bidang'
             )
             ->orderByDesc('registrations.registered_at')
             ->get();

@@ -18,15 +18,12 @@ if ( $editSkillIndex >= 0 && isset($profile["skills"][$editSkillIndex])) {
 
     <link rel="stylesheet" href="<?= $baseUrl ?>public/resources/css/sidebarMahasiswa.css">
     <link rel="stylesheet" href="<?= $baseUrl ?>/public/resources/css/ProfileUser.css">
+    @vite(['resources/css/sidebarMahasiswa.css', 'resources/css/ProfileUser.css', ])
 </head>
 
 <body>
     <!-- SIDEBAR -->
-    <?php
-    $activeMenu = 'profile';
-    $basePath = $baseUrl . '/';
-    include $projectRoot . '/sidebarMahasiswa/sidebar.php';
-    ?>
+    @include('components.sidebar-mahasiswa', ['active' => 'profile'])
     <main class="main-content">
         <header class="header">
             <div class="header-left">
