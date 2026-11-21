@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector(".form-card");
     if (!form) return;
@@ -7,21 +6,17 @@ document.addEventListener("DOMContentLoaded", function () {
         'input[required]:not([type="file"]), textarea[required]'
     );
 
-    const fileInputs = form.querySelectorAll('input[type="file"]');
-
-    const maxSize = 100 * 1024 * 1024;
-    const allowedExtensions = ["pdf", "jpg", "jpeg", "png"];
+    const docInput = document.getElementById("document");
+    const payInput = document.getElementById("payment_receipt");
 
     function getErrorElement(input) {
         let error = input.parentElement.querySelector(".client-error");
-
         if (!error) {
             error = document.createElement("small");
             error.className = "client-error field-error";
             error.hidden = true;
             input.insertAdjacentElement("afterend", error);
         }
-
         return error;
     }
 
@@ -34,23 +29,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function clearError(input) {
         const error = input.parentElement.querySelector(".client-error");
-
         if (error) {
             error.textContent = "";
             error.hidden = true;
         }
-
         input.classList.remove("input-error");
     }
 
-    // Validasi data mahasiswa
     function validateField(input) {
         clearError(input);
 
         if (!input.value.trim()) {
             const label = input.parentElement.querySelector("label");
-            const name = label ? label.textContent.trim() : "Kolom ini";
-
+            const name = label ? label.textContent.replace('*', '').trim() : "Kolom ini";
             showError(input, name + " wajib diisi.");
             return false;
         }
@@ -63,77 +54,69 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
     }
 
-    // Validasi file
-    function validateFile(input) {
+    function validateSingleFile(input, allowedExtensions, maxMb) {
         clearError(input);
-
-        if (!input.files || input.files.length === 0) {
-            const label = input.parentElement.querySelector("label");
-            const name = label ? label.textContent.trim() : "Dokumen";
-
-            showError(input, name + " wajib diunggah.");
-            return false;
+        if (!input || !input.files || input.files.length === 0) {
+            return true;
         }
 
         const file = input.files[0];
         const extension = file.name.split(".").pop().toLowerCase();
 
         if (!allowedExtensions.includes(extension)) {
-            showError(input, "Format file harus PDF, JPG, atau PNG.");
+            showError(input, `Format file harus ${allowedExtensions.join(", ").toUpperCase()}`);
             return false;
         }
 
-        if (file.size > maxSize) {
-            showError(input, "Ukuran file maksimal 100 MB.");
+        if (file.size > maxMb * 1024 * 1024) {
+            showError(input, `Ukuran file maksimal ${maxMb} MB.`);
             return false;
         }
 
         return true;
     }
 
-    // Hapus pesan ketika pengguna mulai memperbaiki input
     requiredFields.forEach(function (input) {
         input.addEventListener("input", function () {
             validateField(input);
         });
     });
 
-    fileInputs.forEach(function (input) {
-        input.addEventListener("change", function () {
-            if (input.files && input.files.length > 0) {
-                validateFile(input);
-            } else {
-                clearError(input);
-            }
+    if (docInput) {
+        docInput.addEventListener("change", function () {
+            validateSingleFile(docInput, ["pdf", "zip", "rar"], 20);
         });
-    });
+    }
 
-    // Validasi seluruh form sebelum dikirim
-    form.addEventListener("submit", function (event) {
-        let firstInvalidInput = null;
+    if (payInput) {
+        payInput.addEventListener("change", function () {
+            validateSingleFile(payInput, ["pdf", "jpg", "jpeg", "png"], 5);
+        });
+    }
+
+    form.addEventListener("submit", function (e) {
+        let isValid = true;
 
         requiredFields.forEach(function (input) {
-            if (!validateField(input) && !firstInvalidInput) {
-                firstInvalidInput = input;
+            if (!validateField(input)) {
+                isValid = false;
             }
         });
 
-        fileInputs.forEach(function (input) {
-            if (!validateFile(input) && !firstInvalidInput) {
-                firstInvalidInput = input;
-            }
-        });
-
-        if (firstInvalidInput) {
-            event.preventDefault();
-            firstInvalidInput.focus();
-            return;
+        if (docInput && !validateSingleFile(docInput, ["pdf", "zip", "rar"], 20)) {
+            isValid = false;
         }
 
-        if (!confirm(
-            "Pastikan semua data dan dokumen sudah benar. Lanjutkan pendaftaran?"
-        )) {
-            event.preventDefault();
+        if (payInput && !validateSingleFile(payInput, ["pdf", "jpg", "jpeg", "png"], 5)) {
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            const firstError = form.querySelector(".input-error");
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+            }
         }
     });
 });

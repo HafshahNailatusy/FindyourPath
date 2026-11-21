@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form Pendaftaran - FindYourPath</title>
-
-    <link rel="stylesheet" href="{{ asset('css/RegistrationForm.css') }}?v=5">
+    <title>Form Pendaftaran Lomba - FindYourPath</title>
+    <link rel="stylesheet" href="{{ asset('css/RegistrationForm.css') }}?v=6">
 </head>
 <body>
 
 <div class="container">
 
-    <a href="{{ route('explore-program') }}">
+    <a href="{{ route('explore-program') }}" class="back-link">
         &larr; Kembali ke Explore Program
     </a>
 
-    <h1>Form Pendaftaran</h1>
+    <h1>Form Pendaftaran Lomba</h1>
 
     @if (!$program)
         <div class="message error">
@@ -25,12 +24,11 @@
     @elseif (session('success'))
         <div class="message success">
             <h2>Pendaftaran Berhasil!</h2>
-            <p>{{ session('registration_code') }}</p>
-            <p>Pendaftaran kamu berhasil dikirim dan sedang menunggu verifikasi.</p>
+            <p>{{ session('success') }}</p>
         </div>
 
-        <a href="{{ route('explore-program') }}">
-            Kembali ke Explore Program
+        <a href="{{ route('registrations.index') }}" class="btn-primary" style="display:inline-block; margin-top:12px;">
+            Lihat Riwayat Pendaftaran
         </a>
 
     @elseif ($existingRegistration)
@@ -38,9 +36,14 @@
             <h2>Kamu Sudah Terdaftar</h2>
             <p>Kamu sudah pernah mendaftar pada program ini.</p>
             <p>
-                Kode Pendaftaran:
-                <strong>{{ $existingRegistration->registration_code }}</strong>
+                Status Pembayaran:
+                <span class="badge-status {{ $existingRegistration->status === 'paid' ? 'badge-paid' : 'badge-unpaid' }}">
+                    {{ $existingRegistration->status === 'paid' ? 'Lunas' : 'Belum Bayar' }}
+                </span>
             </p>
+            <a href="{{ route('registrations.index') }}" class="btn-primary" style="display:inline-block; margin-top:12px;">
+                Lihat Riwayat Pendaftaran
+            </a>
         </div>
 
     @else
@@ -53,22 +56,24 @@
 
         <div class="program-info">
             <h2>{{ $program->nama_program }}</h2>
-            <p>Penyelenggara: {{ $program->penyelenggara }}</p>
-            <p>Kategori: {{ $program->bidang }}</p>        </div>
+            <p><strong>Penyelenggara:</strong> {{ $program->penyelenggara }}</p>
+            <p><strong>Kategori:</strong> {{ $program->bidang }}</p>
+        </div>
 
         <form
             id="registrationForm"
             class="form-card"
             novalidate
-action="{{ route('registrations.store', $program->id_program) }}"            method="POST"
+            action="{{ route('registrations.store', $program->id_program) }}"
+            method="POST"
             enctype="multipart/form-data"
         >
             @csrf
 
-            <h3>Data Mahasiswa</h3>
+            <h3>Data Peserta / Tim</h3>
 
             <div class="form-group">
-                <label>Nama Lengkap</label>
+                <label>Nama Lengkap (Ketua / Individu)</label>
                 <input type="text" value="{{ auth()->user()->name }}" readonly>
             </div>
 
@@ -78,11 +83,58 @@ action="{{ route('registrations.store', $program->id_program) }}"            met
             </div>
 
             <div class="form-group">
-                <label for="phone">Nomor Telepon</label>
+                <label for="team_name">Nama Tim <small class="form-hint">(Kosongkan jika mendaftar perorangan)</small></label>
+                <input
+                    type="text"
+                    id="team_name"
+                    name="team_name"
+                    placeholder="Contoh: Tim Inovasi Juara"
+                    value="{{ old('team_name') }}"
+                >
+                @error('team_name')
+                    <small class="field-error">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="university">Universitas / Perguruan Tinggi <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        id="university"
+                        name="university"
+                        placeholder="Contoh: Universitas Indonesia"
+                        value="{{ old('university') }}"
+                        required
+                    >
+                    @error('university')
+                        <small class="field-error">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="faculty">Fakultas <span class="required">*</span></label>
+                    <input
+                        type="text"
+                        id="faculty"
+                        name="faculty"
+                        placeholder="Contoh: Fakultas Ilmu Komputer"
+                        value="{{ old('faculty') }}"
+                        required
+                    >
+                    @error('faculty')
+                        <small class="field-error">{{ $message }}</small>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Nomor Telepon / WhatsApp <span class="required">*</span></label>
                 <input
                     type="text"
                     id="phone"
                     name="phone"
+                    placeholder="08xxxxxxxxxx"
                     value="{{ old('phone') }}"
                     required
                 >
@@ -91,109 +143,35 @@ action="{{ route('registrations.store', $program->id_program) }}"            met
                 @enderror
             </div>
 
-            <div class="form-group">
-                <label for="university">Universitas</label>
+            <h3>Berkas Pendaftaran Lomba</h3>
+
+            <div class="form-group file-upload-box">
+                <label for="document">Unggah Dokumen / Proposal Lomba</label>
                 <input
-                    type="text"
-                    id="university"
-                    name="university"
-                    value="{{ old('university') }}"
-                    required
+                    type="file"
+                    id="document"
+                    name="document"
+                    accept=".pdf,.zip,.rar"
                 >
-                @error('university')
+                <small class="form-hint">Format didukung: PDF, ZIP, RAR (Maksimal 20 MB).</small>
+                @error('document')
                     <small class="field-error">{{ $message }}</small>
                 @enderror
             </div>
 
-            <div class="form-group">
-                <label for="study_program">Program Studi</label>
+            <div class="form-group file-upload-box">
+                <label for="payment_receipt">Unggah Bukti Pembayaran / Transfer</label>
                 <input
-                    type="text"
-                    id="study_program"
-                    name="study_program"
-                    value="{{ old('study_program') }}"
-                    required
+                    type="file"
+                    id="payment_receipt"
+                    name="payment_receipt"
+                    accept=".pdf,.jpg,.jpeg,.png"
                 >
-                @error('study_program')
+                <small class="form-hint">Format didukung: PDF, JPG, PNG (Maksimal 5 MB).</small>
+                @error('payment_receipt')
                     <small class="field-error">{{ $message }}</small>
                 @enderror
             </div>
-
-            <div class="form-group">
-                <label for="reason">Alasan Mengikuti Program</label>
-                <textarea
-                    id="reason"
-                    name="reason"
-                    rows="5"
-                    required
-                >{{ old('reason') }}</textarea>
-
-                @error('reason')
-                    <small class="field-error">{{ $message }}</small>
-                @enderror
-            </div>
-
-            {{-- @if ($program->biaya > 0)
-                <h3>Bukti Pembayaran</h3>
-
-                <div class="form-group">
-                    <label>Biaya Pendaftaran</label>
-
-                    <input
-                        type="text"
-                        value="Rp {{ number_format($program->biaya, 0, ',', '.') }}"
-                        readonly
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="bukti_pembayaran">
-                        Upload Bukti Pembayaran
-                    </label>
-
-                    <input
-                        type="file"
-                        id="bukti_pembayaran"
-                        name="bukti_pembayaran"
-                        accept=".pdf,.jpg,.jpeg,.png"
-                    >
-
-                    @error('bukti_pembayaran')
-                        <small class="field-error">{{ $message }}</small>
-                    @enderror
-
-                    <small>
-                        Format PDF, JPG, atau PNG. Maksimal 100 MB.
-                    </small>
-                </div>
-            @endif --}}
-
-            @if (!empty($documents) && count($documents) > 0)
-                <h3>Dokumen Persyaratan</h3>
-
-                @foreach ($documents as $document)
-                    <div class="form-group">
-                        <label for="document_{{ $document->id }}">
-                            {{ $document->isi }}
-                        </label>
-
-                        <input
-                            type="file"
-                            id="document_{{ $document->id }}"
-                            name="documents[{{ $document->id }}]"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                        >
-
-                        @error('documents.' . $document->id)
-                            <small class="field-error">{{ $message }}</small>
-                        @enderror
-
-                        <small>
-                            Format PDF, JPG, atau PNG. Maksimal 100 MB per file.
-                        </small>
-                    </div>
-                @endforeach
-            @endif
 
             <button type="submit">
                 Kirim Pendaftaran
@@ -209,13 +187,20 @@ action="{{ route('registrations.store', $program->id_program) }}"            met
             <div class="history-item">
                 <h3>{{ $riwayat->nama_program ?? 'Program' }}</h3>
 
-                <p>Kode: {{ $riwayat->registration_code }}</p>
-                <p>Kategori: {{ $riwayat->bidang ?? '-' }}</p>
+                <p><strong>Kategori:</strong> {{ $riwayat->bidang ?? '-' }}</p>
+                @if ($riwayat->team_name)
+                    <p><strong>Nama Tim:</strong> {{ $riwayat->team_name }}</p>
+                @endif
                 <p>
-                    Tanggal:
-                    {{ $riwayat->registered_at?->format('d-m-Y') ?? '-' }}
+                    <strong>Tanggal Daftar:</strong>
+                    {{ $riwayat->tanggal_daftar ? \Carbon\Carbon::parse($riwayat->tanggal_daftar)->format('d-m-Y H:i') : '-' }}
                 </p>
-                <p>Status: {{ $riwayat->status }}</p>
+                <p>
+                    <strong>Status:</strong>
+                    <span class="badge-status {{ $riwayat->status === 'paid' ? 'badge-paid' : 'badge-unpaid' }}">
+                        {{ $riwayat->status === 'paid' ? 'Lunas / Terbayar' : 'Belum Bayar' }}
+                    </span>
+                </p>
 
                 <div class="history-actions">
                     <a
@@ -225,18 +210,18 @@ action="{{ route('registrations.store', $program->id_program) }}"            met
                         Lihat Program
                     </a>
 
-                    @if ($riwayat->status === 'Menunggu Verifikasi')
+                    @if ($riwayat->status === 'unpaid')
                         <a
                             href="{{ route('registrations.edit', $riwayat->registration_id) }}"
                             class="edit-registration-button"
                         >
-                            Edit Pendaftaran
+                            Edit / Bayar
                         </a>
 
                         <form
                             method="POST"
                             action="{{ route('registrations.cancel', $riwayat->registration_id) }}"
-                            onsubmit="return confirm('Yakin ingin membatalkan pendaftaran ini? Riwayat pendaftaran tetap akan tersimpan.');"
+                            onsubmit="return confirm('Yakin ingin membatalkan pendaftaran ini?');"
                         >
                             @csrf
                             @method('PATCH')
@@ -245,7 +230,7 @@ action="{{ route('registrations.store', $program->id_program) }}"            met
                                 type="submit"
                                 class="cancel-registration-button"
                             >
-                                Batalkan Pendaftaran
+                                Batalkan
                             </button>
                         </form>
                     @endif
@@ -258,7 +243,7 @@ action="{{ route('registrations.store', $program->id_program) }}"            met
 
 </div>
 
-<script src="{{ asset('js/RegistrationForm.js') }}"></script>
+<script src="{{ asset('js/RegistrationForm.js') }}?v=6"></script>
 
 </body>
 </html>

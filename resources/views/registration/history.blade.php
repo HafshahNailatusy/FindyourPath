@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Pendaftaran - FindYourPath</title>
-
-    <link rel="stylesheet" href="{{ asset('css/RegistrationForm.css') }}?v=5">
+    <link rel="stylesheet" href="{{ asset('css/RegistrationForm.css') }}?v=6">
 </head>
 <body>
 
 <div class="container">
-    <h1>Riwayat Pendaftaran Saya</h1>
+    <a href="{{ route('explore-program') }}" class="back-link">&larr; Kembali ke Explore Program</a>
+    <h1 style="margin-top: 16px;">Riwayat Pendaftaran Lomba Saya</h1>
+
     @if (session('success'))
         <div class="message success">
             {{ session('success') }}
@@ -23,81 +24,67 @@
         </div>
     @endif
 
-    @forelse ($riwayatPendaftaran as $riwayat)
-        <div class="history-item">
-            <h3>{{ $riwayat->nama_program ?? 'Program tidak tersedia' }}</h3>
-            <p>Kode: {{ $riwayat->registration_code }}</p>
-            <p>Kategori: {{ $riwayat->kategori ?? '-' }}</p>
-            <p>
-                Tanggal:
-                {{ $riwayat->registered_at
-                    ? \Carbon\Carbon::parse($riwayat->registered_at)->format('d-m-Y')
-                    : '-' }}
-            </p>
-            <p>Status: {{ $riwayat->status }}</p>
-
-            @if ($riwayat->biaya_program > 0)
+    <div class="history-list" style="margin-top: 24px;">
+        @forelse ($riwayatPendaftaran as $riwayat)
+            <div class="history-item">
+                <h3>{{ $riwayat->nama_program ?? 'Program Lomba' }}</h3>
+                <p><strong>Kategori:</strong> {{ $riwayat->bidang ?? '-' }}</p>
+                @if ($riwayat->team_name)
+                    <p><strong>Nama Tim:</strong> {{ $riwayat->team_name }}</p>
+                @endif
+                <p><strong>Universitas:</strong> {{ $riwayat->university }} ({{ $riwayat->faculty }})</p>
                 <p>
-                    Biaya Pendaftaran:
-                    Rp {{ number_format($riwayat->biaya_program, 0, ',', '.') }}
+                    <strong>Tanggal Daftar:</strong>
+                    {{ $riwayat->tanggal_daftar ? \Carbon\Carbon::parse($riwayat->tanggal_daftar)->format('d-m-Y H:i') : '-' }}
+                </p>
+                <p>
+                    <strong>Status:</strong>
+                    <span class="badge-status {{ $riwayat->status === 'paid' ? 'badge-paid' : 'badge-unpaid' }}">
+                        {{ $riwayat->status === 'paid' ? 'Lunas / Terbayar' : 'Belum Bayar' }}
+                    </span>
                 </p>
 
-                <p>
-                    Status Pembayaran:
-                    {{ $riwayat->payment_status ?? 'Belum ada bukti pembayaran' }}
-                </p>
+                <div style="margin: 8px 0; font-size: 14px;">
+                    @if ($riwayat->document)
+                        <span style="margin-right: 12px;">📁 <a href="{{ asset('storage/' . $riwayat->document) }}" target="_blank">Lihat Dokumen</a></span>
+                    @endif
+                    @if ($riwayat->payment_receipt)
+                        <span>🧾 <a href="{{ asset('storage/' . $riwayat->payment_receipt) }}" target="_blank">Lihat Bukti Bayar</a></span>
+                    @endif
+                </div>
 
-                @if ($riwayat->payment_proof)
-                    <p>
-                        Bukti Pembayaran:
+                <div class="history-actions">
+                    @if ($riwayat->status === 'unpaid')
                         <a
-                            href="{{ asset('storage/' . $riwayat->payment_proof) }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            href="{{ route('registrations.edit', $riwayat->registration_id) }}"
+                            class="edit-registration-button"
                         >
-                            Lihat Bukti Pembayaran
+                            Edit / Bayar
                         </a>
-                    </p>
-                @endif
-            @else
-                <p>Biaya Pendaftaran: Gratis</p>
-            @endif
-    
-            <div class="history-actions">
-                @if ($riwayat->status === 'Menunggu Verifikasi')
-                    <a
-                        href="{{ route('registrations.edit', $riwayat->registration_id) }}"
-                        class="edit-registration-button"
-                    >
-                        Edit Pendaftaran
-                    </a>
 
-                    <form
-                        method="POST"
-                        action="{{ route('registrations.cancel', $riwayat->registration_id) }}"
-                        onsubmit="return confirm('Yakin ingin membatalkan pendaftaran ini?')"
-                    >
-                        @csrf
-                        @method('PATCH')
-
-                        <button
-                            type="submit"
-                            class="cancel-registration-button"
+                        <form
+                            method="POST"
+                            action="{{ route('registrations.cancel', $riwayat->registration_id) }}"
+                            onsubmit="return confirm('Yakin ingin membatalkan pendaftaran ini?')"
                         >
-                            Batalkan Pendaftaran
-                        </button>
-                    </form>
-                @endif
+                            @csrf
+                            @method('PATCH')
+
+                            <button
+                                type="submit"
+                                class="cancel-registration-button"
+                            >
+                                Batalkan
+                            </button>
+                        </form>
+                    @endif
+                </div>
             </div>
-        </div>
-    @empty
-        <p>Belum ada riwayat pendaftaran.</p>
-    @endforelse
-
-    <a href="{{ route('explore-program') }}">
-        Kembali ke Explore Program
-    </a>
-
+        @empty
+            <p>Belum ada riwayat pendaftaran.</p>
+        @endforelse
+    </div>
 </div>
+
 </body>
 </html>
