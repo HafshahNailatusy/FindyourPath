@@ -207,6 +207,26 @@
                         Halaman {{ $announcements->currentPage() }} dari {{ $announcements->lastPage() }}
                     </span>
 
+                    @php
+                        $currentPage = $announcements->currentPage();
+                        $lastPage    = $announcements->lastPage();
+
+                        // Hitung jendela maksimal 3 halaman yang bergeser (1-3, 3-5, dst.)
+                        if ($lastPage <= 3) {
+                            $startPage = 1;
+                            $endPage   = $lastPage;
+                        } elseif ($currentPage <= 2) {
+                            $startPage = 1;
+                            $endPage   = 3;
+                        } elseif ($currentPage >= $lastPage - 1) {
+                            $startPage = $lastPage - 2;
+                            $endPage   = $lastPage;
+                        } else {
+                            $startPage = $currentPage - 1;
+                            $endPage   = $currentPage + 1;
+                        }
+                    @endphp
+
                     <div class="pagination-pages">
                         @if($announcements->onFirstPage())
                             <span class="page-btn page-btn--nav" style="opacity: 0.4; pointer-events: none;">&lsaquo;</span>
@@ -214,9 +234,9 @@
                             <a href="{{ $announcements->previousPageUrl() }}" class="page-btn page-btn--nav" style="text-decoration: none;">&lsaquo;</a>
                         @endif
 
-                        @for($p = 1; $p <= $announcements->lastPage(); $p++)
+                        @for($p = $startPage; $p <= $endPage; $p++)
                             <a href="{{ $announcements->url($p) }}"
-                               class="page-btn {{ $p == $announcements->currentPage() ? 'page-btn--active' : '' }}"
+                               class="page-btn {{ $p == $currentPage ? 'page-btn--active' : '' }}"
                                style="text-decoration: none;">
                                 {{ $p }}
                             </a>
