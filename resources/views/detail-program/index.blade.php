@@ -34,7 +34,13 @@
         <section class="program-banner">
             @if (!empty($program->gambar))
                 <img
-                    src="{{ asset($program->gambar) }}"
+                    src="{{ Str::startsWith($program->gambar, ['http://', 'https://']) ? $program->gambar : asset($program->gambar) }}"
+                    alt="Banner {{ $program->judul }}"
+                    class="banner-image"
+                >
+            @else
+                <img
+                    src="{{ asset('images/banner_illustration.png') }}"
                     alt="Banner {{ $program->judul }}"
                     class="banner-image"
                 >
