@@ -20,7 +20,7 @@
 
     <div class="dashboard-container">
 
-        @include('components.sidebar-mahasiswa', ['active' => 'find-opportunities'])
+        <x-sidebar-mahasiswa active="find-opportunities" />
 
         <main class="main-content">
 

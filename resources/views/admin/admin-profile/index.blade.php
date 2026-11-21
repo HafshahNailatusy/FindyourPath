@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="layout-wrapper">
-        @include('components.sidebar-admin', ['activeMenu' => 'profile'])
+        <x-sidebar-admin active="profile" />
 
         <div class="main-wrapper">
             <header class="header">

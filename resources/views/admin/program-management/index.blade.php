@@ -16,7 +16,7 @@
 
 <body>
     <div class="layout-wrapper">
-        @includeIf('components.sidebar-admin', ['activeMenu' => 'program'])
+        <x-sidebar-admin active="program" />
 
         <div class="main-wrapper">
             <header class="header">

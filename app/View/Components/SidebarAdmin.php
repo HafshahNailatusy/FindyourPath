@@ -11,35 +11,35 @@ class SidebarAdmin extends Component
     public string $active;
     public array $menuItems;
 
-    public function __construct(string $active = '')
+    public function __construct(string $active = '', string $activeMenu = '')
     {
-        $this->active = $active;
+        $this->active = $active ?: $activeMenu;
         $this->menuItems = [
-             [
-            'key' => 'dashboard',    
-            'title' => 'Dashboard',    
-            'url' => url('/admin/dashboard')
-        ],
-        [
-            'key' => 'program',
-            'title' => 'Program',
-            'url' => url('/admin/program-management')
-        ],
-        [
-            'key' => 'announcement',
-            'title' => 'Announcement',
-            'url' => url('/admin/announcements')
-        ],
-        [
-            'key' => 'schedule',
-            'title' => 'Schedule',
-            'url' => url('/admin/schedule')
-        ],
-        [
-            'key' => 'profile',
-            'title' => 'Profile',
-            'url' => url('/admin/profile')
-        ],
+            [
+                'key' => 'dashboard',
+                'title' => 'Dashboard',
+                'url' => route('admin.dashboard'),
+            ],
+            [
+                'key' => 'program',
+                'title' => 'Program',
+                'url' => route('admin.program-management.index'),
+            ],
+            [
+                'key' => 'announcement',
+                'title' => 'Announcement',
+                'url' => route('admin.announcements.index'),
+            ],
+            [
+                'key' => 'schedule',
+                'title' => 'Schedule',
+                'url' => route('admin.schedule.index'),
+            ],
+            [
+                'key' => 'profile',
+                'title' => 'Profile',
+                'url' => route('admin.profile'),
+            ],
         ];
     }
 

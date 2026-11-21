@@ -43,7 +43,7 @@ class User extends Authenticatable {
     {
         return $this->isAdmin()
             ? route('admin.dashboard')
-            : route('explore-program'); 
+            : route('mahasiswa.dashboard'); 
     }
 
     public function student(): HasOne

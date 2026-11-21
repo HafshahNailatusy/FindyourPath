@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    @includeIf('components.sidebar-admin', ['activeMenu' => 'announcement'])
+    <x-sidebar-admin active="announcement" />
 
     <div class="main-wrapper">
         <header class="header">

@@ -1,34 +1,9 @@
-@php
-
-    $menuItems = $menuItems ?? [
-        [
-            'key' => 'dashboard',
-            'title' => 'Dashboard',
-            'url' => 'dashboard-user'
-        ],
-        [
-            'key' => 'explore-program',
-            'title' => 'Explore Program',
-            'url' => 'explore-program'
-        ],
-        [
-            'key' => 'find-opportunities',
-            'title' => 'Find Opportunities',
-            'url' => 'find-opportunities'
-        ],
-        [
-            'key' => 'profile',
-            'title' => 'Profile',
-            'url' => 'profile'
-        ],
-    ];
-@endphp
 @vite(['resources/css/sidebarMahasiswa.css', 'resources/js/sidebarMahasiswa.js'])
 
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 <aside class="fyp-sidebar" id="fypSidebar">
     <div class="sidebar-header">
-        <a href="{{ route('explore-program') }}" class="sidebar-brand">
+        <a href="{{ route('mahasiswa.dashboard') }}" class="sidebar-brand">
             <img src="{{ asset('images/LOGO.png') }}" alt="FindYourPath Logo" class="brand-logo">
         </a>
         <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Tutup menu">&times;</button>

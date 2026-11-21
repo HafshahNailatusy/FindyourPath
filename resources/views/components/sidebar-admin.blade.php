@@ -1,33 +1,3 @@
-@php
-    $menuItems = [
-        [
-            'key' => 'dashboard',    
-            'title' => 'Dashboard',    
-            'url' => url('/admin/dashboard')
-        ],
-        [
-            'key' => 'program',
-            'title' => 'Program',
-            'url' => url('/admin/program-management')
-        ],
-        [
-            'key' => 'announcement',
-            'title' => 'Announcement',
-            'url' => url('/admin/announcements')
-        ],
-        [
-            'key' => 'schedule',
-            'title' => 'Schedule',
-            'url' => url('/admin/schedule')
-        ],
-        [
-            'key' => 'profile',
-            'title' => 'Profile',
-            'url' => url('/admin/profile')
-        ],
-    ];
-@endphp
-
 @vite(['resources/css/sidebarAdmin.css', 'resources/js/sidebarAdmin.js'])
 
 <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
@@ -44,7 +14,7 @@
             @foreach ($menuItems as $item)
                 <li class="nav-item">
                     <a href="{{ $item['url'] }}" 
-                       class="nav-link {{ ($activeMenu ?? '') === $item['key'] ? 'active' : '' }}">
+                       class="nav-link {{ $active === $item['key'] ? 'active' : '' }}">
                         <span class="nav-title">{{ $item['title'] }}</span>
                     </a>
                 </li>

@@ -75,7 +75,7 @@ class ProfileUserController extends Controller {
                     ->update(['name' => $validated['nama']]);
 
                 return redirect()
-                    ->route('students.profile')
+                    ->route('mahasiswa.profile')
                     ->with('success', 'Profil berhasil diperbarui.');
             }
 
@@ -101,24 +101,24 @@ class ProfileUserController extends Controller {
                 );
 
                 return redirect()
-                    ->route('students.profile')
+                    ->route('mahasiswa.profile')
                     ->with('success', 'Data akademik berhasil diperbarui.');
             }
 
             return redirect()
-                ->route('students.profile')
+                ->route('mahasiswa.profile')
                 ->with('error', 'Aksi tidak dikenali.');
 
         } catch (\DomainException $e) {
             return redirect()
-                ->route('students.profile')
+                ->route('mahasiswa.profile')
                 ->with('error', $e->getMessage());
 
         } catch (\Throwable $e) {
             report($e);
 
             return redirect()
-                ->route('students.profile')
+                ->route('mahasiswa.profile')
                 ->with('error', 'Gagal memperbarui profil. Silakan coba lagi.');
         }
     }

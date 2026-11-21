@@ -34,6 +34,10 @@ body {
     max-width: 250px !important;
     background-color: #ffffff;
     border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 24px 18px;
     position: fixed !important;
     height: 100vh;
     top: 0;

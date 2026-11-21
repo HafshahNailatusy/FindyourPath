@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="layout-wrapper">
-        @include('components.sidebar-admin', ['activeMenu' => 'schedule'])
+        <x-sidebar-admin active="schedule" />
 
         <div class="main-wrapper">
             <header class="header">
