@@ -145,7 +145,7 @@ body {
 .opportunity-hero {
   min-height: 215px;
   border-radius: 17px;
-  padding: 35px 42px;
+  padding: 20px 42px;
   background: linear-gradient(110deg, #dcefff, #c5e9f8, #e9f7fc);
   display: flex;
   align-items: center;

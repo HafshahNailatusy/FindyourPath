@@ -30,8 +30,6 @@
             <label>Bidang Minat</label>
             <select id="categoryFilter">
                 <option value="Semua">Semua</option>
-                <option value="Lomba">Lomba</option>
-                <option value="Beasiswa">Beasiswa</option>
                 <option value="Teknologi">Teknologi</option>
                 <option value="Pendidikan">Pendidikan</option>
                 <option value="Bisnis">Bisnis</option>
@@ -48,18 +46,18 @@
         data-category="{{ Str::lower($prog->bidang) }}">
         <div class="card-image">
             @php
-                $imageSrc = $prog->poster;
-                if ($imageSrc && !Str::startsWith($imageSrc, ['http://', 'https://']) && !Str::contains($imageSrc, '/')) {
-                    $imageSrc = asset('uploads/posters/' . $imageSrc);
-                } elseif ($imageSrc && !Str::startsWith($imageSrc, ['http://', 'https://'])) {
-                    $imageSrc = asset($imageSrc);
-                }
+            $imageSrc = $prog->poster;
+            if ($imageSrc && !Str::startsWith($imageSrc, ['http://', 'https://']) && !Str::contains($imageSrc, '/')) {
+            $imageSrc = asset('uploads/posters/' . $imageSrc);
+            } elseif ($imageSrc && !Str::startsWith($imageSrc, ['http://', 'https://'])) {
+            $imageSrc = asset($imageSrc);
+            }
             @endphp
 
             @if ($imageSrc)
-                <img src="{{ $imageSrc }}" alt="{{ $prog->nama_program }}">
+            <img src="{{ $imageSrc }}" alt="{{ $prog->nama_program }}">
             @else
-                <img src="{{ asset('images/banner_illustration.png') }}" alt="{{ $prog->nama_program }}">
+            <img src="{{ asset('images/banner_illustration.png') }}" alt="{{ $prog->nama_program }}">
             @endif
             <span class="type-badge">{{ $prog->bidang }}</span>
         </div>
@@ -71,7 +69,7 @@
             <p class="card-desc">{{ Str::limit($prog->deskripsi, 120) }}</p>
             @endif
 
-            <a href="{{ route('programs.show', $prog->id) }}" class="detail-link">Lihat Detail &rarr;</a>
+            <a href="{{ route('programs.show', $prog->id_program) }}" class="detail-link">Lihat Detail &rarr;</a>
         </div>
     </div>
     @empty
