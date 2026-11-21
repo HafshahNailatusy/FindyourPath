@@ -1,7 +1,7 @@
 @extends('layouts.mahasiswa')
 
 @section('title', 'Detail Program')
-@section('menu', 'explore-program')
+@section('menu', 'detail-program')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('css/DetailProgram.css') }}">
