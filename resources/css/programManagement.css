@@ -189,15 +189,18 @@ body {
 }
 
 .pm-welcome-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    color: #172554;
+    color: #111827;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
 }
 
 .pm-welcome-subtitle {
-    margin-top: 4px;
-    color: #64748b;
     font-size: 14px;
+    color: #6B7280;
+    font-weight: 400;
+    line-height: 1.5;
 }
 
 .pm-stats-container {
@@ -272,7 +275,7 @@ body {
     display: flex;
     align-items: center;
     gap: 7px;
-    background:#388da8;
+    background: #388da8;
     color: white;
     border: none;
     padding: 11px 18px;
@@ -546,4 +549,88 @@ th {
 #cancelModal {
     background: #e2e8f0;
     color: #334155;
+}
+
+@media (max-width: 1024px) {
+    .pm-stats-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+}
+
+@media (max-width: 900px) {
+    .main-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    .main-content {
+        padding: 20px 16px 36px;
+    }
+
+    .header {
+        padding: 0 16px;
+        margin: -20px -16px 20px;
+    }
+
+    .pm-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .pm-search-box,
+    .pm-filter-select,
+    #addProgramButton {
+        width: 100%;
+    }
+
+    .pm-table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+    }
+
+    table {
+        min-width: 700px;
+    }
+}
+
+@media (max-width: 640px) {
+    .pm-welcome-title {
+        font-size: 20px;
+    }
+
+    .pm-welcome-subtitle {
+        font-size: 13px;
+    }
+
+    .pm-stats-container {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .pm-stat-card {
+        padding: 16px 20px;
+    }
+
+    .header-userinfo {
+        display: none;
+    }
+
+    .pm-modal-content {
+        width: 95%;
+        max-width: 95%;
+        padding: 20px 16px;
+        margin: 16px auto;
+    }
+
+    .pm-modal-actions {
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+
+    .pm-modal-actions button {
+        width: 100%;
+    }
 }

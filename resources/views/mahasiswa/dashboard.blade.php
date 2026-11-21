@@ -9,7 +9,6 @@
 
 @section('content')
 <div class="user-dashboard">
-    {{-- Welcome Banner --}}
     <section class="welcome-banner">
         <div class="welcome-text">
             <h1 class="welcome-title">Selamat Datang, {{ ucwords($nama) }}! <span>👋🏻</span></h1>
@@ -176,6 +175,9 @@
                         </svg>
                         {{ $program->penyelenggara }}
                     </p>
+                    <a href="{{ route('programs.show', $program->id_program) }}" class="opportunity-detail-btn">
+                        Lihat Detail &rarr;
+                    </a>
                 </div>
             </div>
             @empty

@@ -48,8 +48,8 @@
                 @endif
 
                 <section class="pm-welcome-section">
-                    <h2 class="pm-welcome-title">Hi, {{ $adminName ?? 'Admin' }}</h2>
-                    <p class="pm-welcome-subtitle">Kelola informasi program, lomba, dan beasiswa dalam satu tempat.</p>
+                    <h2 class="pm-welcome-title">Hi, {{ $adminName ?? 'Admin' }}!</h2>
+                    <p class="pm-welcome-subtitle">Kelola dan pantau seluruh informasi serta kegiatan perlombaan secara terstruktur, sistematis, dan efisien.</p>
                 </section>
 
                 <section class="pm-stats-container">
@@ -232,7 +232,7 @@
         @csrf
         @method('DELETE')
     </form>
-    
+
 </body>
 
 </html>

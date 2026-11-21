@@ -177,15 +177,17 @@ body {
 }
 
 .welcome-title {
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    color: var(--primary-dark);
-    margin-bottom: 6px;
+    color: #111827;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
 }
 
 .welcome-subtitle {
     font-size: 14px;
-    color: var(--text-muted);
+    color: #6B7280;
+    font-weight: 400;
     line-height: 1.5;
 }
 
@@ -532,4 +534,122 @@ body {
 
 .empty-state-box.full-width {
     grid-column: 1 / -1;
+}
+
+.opportunity-detail-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background-color: #EBF7FB;
+    color: var(--primary-dark);
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.opportunity-detail-btn:hover {
+    background-color: var(--primary);
+    color: #FFFFFF;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-top-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 900px) {
+    .header {
+        padding: 0 16px;
+        margin: -20px -16px 20px;
+        height: 70px;
+    }
+
+    .header-title {
+        font-size: 18px;
+    }
+
+    .hamburger-btn {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .header-userinfo {
+        display: none;
+    }
+
+    .welcome-banner {
+        padding: 20px;
+    }
+
+    .welcome-title {
+        font-size: 20px;
+    }
+
+    .welcome-subtitle {
+        font-size: 13px;
+    }
+
+    .dash-card {
+        padding: 18px 16px;
+    }
+
+    .opportunity-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 640px) {
+    .main-content {
+        padding: 16px 12px 32px;
+    }
+
+    .welcome-banner {
+        padding: 16px;
+    }
+
+    .welcome-title {
+        font-size: 18px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .view-all-link {
+        align-self: flex-start;
+    }
+
+    .schedule-item {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .schedule-indicator {
+        display: none;
+    }
+
+    .schedule-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .opportunity-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .opportunity-poster {
+        height: 180px;
+    }
 }

@@ -78,7 +78,7 @@ class ProgramManagementController extends Controller
         ]);
 
         if ($request->hasFile('poster')) {
-          
+
             if ($program->poster && File::exists(public_path('uploads/posters/' . $program->poster))) {
                 File::delete(public_path('uploads/posters/' . $program->poster));
             }
@@ -107,6 +107,10 @@ class ProgramManagementController extends Controller
     {
         $program = ProgramManagement::findOrFail($id);
 
+        if (method_exists($program, 'schedules')) {
+            $program->schedules()->delete();
+        }
+
         if ($program->poster && File::exists(public_path('uploads/posters/' . $program->poster))) {
             File::delete(public_path('uploads/posters/' . $program->poster));
         }
@@ -114,6 +118,6 @@ class ProgramManagementController extends Controller
         $program->delete();
 
         return redirect()->route('admin.program-management.index')
-            ->with('success', 'Program berhasil dihapus!');
+            ->with('success', 'Program dan jadwal terkait berhasil dihapus!');
     }
 }
