@@ -165,7 +165,7 @@ class RegistrationController extends Controller {
         $userId = auth()->user()->id;
 
         $riwayatPendaftaran = DB::table('registrations')
-            ->leftJoin('program_management', 'registrations.program_id', '=', 'program_management.id_program')
+            ->leftJoin('program_management', 'registrations.program_id', '=', 'program_management.program_id')
             ->where('registrations.student_id', $userId)
             ->select('registrations.*', 'program_management.nama_program', 'program_management.bidang')
             ->orderByDesc('registrations.tanggal_daftar')
