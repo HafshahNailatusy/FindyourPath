@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('student_achievements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->integer('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('title');
             $table->string('category', 100)->nullable();
             $table->string('organizer')->nullable();
