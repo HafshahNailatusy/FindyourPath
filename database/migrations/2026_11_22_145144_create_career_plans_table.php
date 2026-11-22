@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('career_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->integer('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('career_title');
             $table->text('description')->nullable();
             $table->date('target_date')->nullable();
