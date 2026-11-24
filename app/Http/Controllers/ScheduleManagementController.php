@@ -48,14 +48,25 @@ class ScheduleManagementController extends Controller
             'event_date' => 'required|date',
         ]);
 
-        ScheduleManagement::create($validated);
+        try {
+            ScheduleManagement::create($validated);
 
-        return redirect()->route('admin.schedule.index')->with('success', 'Jadwal program berhasil ditambahkan!');
+            return redirect()->route('admin.schedule.index')
+            ->with('success', 'Jadwal program berhasil ditambahkan!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan jadwal program: ' . $e->getMessage());
+        }
+
     }
 
     public function update(Request $request, $id)
     {
-        $schedule = ScheduleManagement::findOrFail($id);
+        try {
+            $schedule = ScheduleManagement::findOrFail($id);
+        }catch (\Exception $e) {
+            return redirect()->route('admin.schedule.index')->with('error', 'Jadwal program tidak ditemukan: '. $e->getMessage());
+        }
 
         $validated = $request->validate([
             'id_program' => 'required|exists:program_management,id_program',
@@ -66,16 +77,25 @@ class ScheduleManagementController extends Controller
             'event_date' => 'required|date',
         ]);
 
-        $schedule->update($validated);
+        try{
+            $schedule->update($validated);
 
-        return redirect()->route('admin.schedule.index')->with('success', 'Jadwal program berhasil diperbarui!');
+            return redirect()->route('admin.schedule.index')->with('success', 'Jadwal program berhasil diperbarui!');
+
+        } catch (\Exception $e) {
+            return redirect()->route('admin.schedule.index')->withInput()->with('error', 'Gagal memperbarui jadwal program: ' . $e->getMessage());
+        }
     }
 
     public function destroy($id)
     {
-        $schedule = ScheduleManagement::findOrFail($id);
-        $schedule->delete();
+        try {
+            $schedule = ScheduleManagement::findOrFail($id);
+            $schedule->delete();
 
-        return redirect()->route('admin.schedule.index')->with('success', 'Jadwal berhasil dihapus!');
+            return redirect()->route('admin.schedule.index')->with('success', 'Jadwal berhasil dihapus!');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.schedule.index')->with('error', 'Gagal menghapus jadwal program: ' . $e->getMessage());
+        }
     }
 }

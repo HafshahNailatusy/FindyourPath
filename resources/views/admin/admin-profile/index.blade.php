@@ -107,6 +107,7 @@
                 </div>
                 <form method="POST" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
                     @csrf
+                    @method('PUT')
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="inputAvatar">Foto Profil</label>

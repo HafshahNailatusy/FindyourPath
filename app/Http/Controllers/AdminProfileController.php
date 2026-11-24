@@ -29,10 +29,11 @@ class AdminProfileController extends Controller
             'avatar'     => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        $user->update([
-            'name'  => $request->name,
-            'email' => $request->email,
-        ]);
+        try {
+            $user->update([
+                'name'  => $request->name,
+                'email' => $request->email,
+            ]);
 
         $avatarPath = $user->admin?->avatar;
         if ($request->hasFile('avatar')) {
@@ -68,7 +69,11 @@ class AdminProfileController extends Controller
         );
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui!');
-    }
+        
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Gagal memperbarui profil: ' . $e->getMessage());
+        }
+}
 
     public function deleteAvatar()
     {
@@ -77,9 +82,13 @@ class AdminProfileController extends Controller
             if (File::exists(public_path($user->admin->avatar))) {
                 File::delete(public_path($user->admin->avatar));
             }
+            try{
             $user->admin()->update(['avatar' => null]);
             return redirect()->back()->with('success', 'Foto profil berhasil dihapus!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menghapus foto profil: ' . $e->getMessage());
         }
+    }
 
         return redirect()->back()->with('error', 'Tidak ada foto profil untuk dihapus.');
     }
