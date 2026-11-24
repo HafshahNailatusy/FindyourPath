@@ -24,7 +24,7 @@ class RegistrationController extends Controller {
         $existingRegistration = Registration::getExistingRegistration($userId, $programId);
 
         $riwayatPendaftaran = DB::table('registrations')
-            ->leftJoin('program_management', 'registrations.program_id', '=', 'program_management.id_program')
+            ->leftJoin('program_management', 'registrations.id_program', '=', 'program_management.id_program')
             ->where('registrations.student_id', $userId)
             ->select('registrations.*', 'program_management.nama_program', 'program_management.bidang')
             ->orderByDesc('registrations.tanggal_daftar')
@@ -74,7 +74,7 @@ class RegistrationController extends Controller {
         $initialStatus = $paymentPath ? 'paid' : 'unpaid';
 
         Registration::create([
-            'program_id'      => $programId,
+            'id_program'      => $programId,
             'student_id'      => $userId,
             'full_name'       => $user->name,
             'email'           => $user->email,
@@ -100,7 +100,7 @@ class RegistrationController extends Controller {
         abort_if(!$pendaftaran, 404, 'Pendaftaran tidak ditemukan.');
 
         $program = DB::table('program_management')
-            ->where('id_program', $pendaftaran->program_id)
+            ->where('id_program', $pendaftaran->id_program)
             ->first();
 
         return view('registration.edit', [
@@ -165,7 +165,7 @@ class RegistrationController extends Controller {
         $userId = auth()->user()->id;
 
         $riwayatPendaftaran = DB::table('registrations')
-            ->leftJoin('program_management', 'registrations.program_id', '=', 'program_management.program_id')
+            ->leftJoin('program_management', 'registrations.id_program', '=', 'program_management.id_program')
             ->where('registrations.student_id', $userId)
             ->select('registrations.*', 'program_management.nama_program', 'program_management.bidang')
             ->orderByDesc('registrations.tanggal_daftar')

@@ -29,7 +29,7 @@ class Program {
         $stmtDetail = $this->pdo->prepare(
             "SELECT jenis, isi
              FROM program_detail
-             WHERE program_id = :id
+             WHERE id_program = :id
              ORDER BY id ASC"
         );
 

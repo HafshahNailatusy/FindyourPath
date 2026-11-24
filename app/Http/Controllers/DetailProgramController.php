@@ -49,7 +49,7 @@ class DetailProgramController extends Controller {
             $details = [];
             if (Schema::hasTable('program_detail')) {
                 $details = DB::table('program_detail')
-                    ->where('program_id', $id)
+                    ->where('id_program', $id)
                     ->orderBy('id')
                     ->get();
             }

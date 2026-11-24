@@ -30,7 +30,7 @@ class Registration extends Model {
 
     public static function getExistingRegistration(int $studentId, int $programId): ?self {
         return self::where('student_id', $studentId)
-            ->where('program_id', $programId)
+            ->where('id_program', $programId)
             ->first();
     }
 
