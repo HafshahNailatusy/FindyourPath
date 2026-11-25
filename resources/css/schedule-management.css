@@ -932,7 +932,7 @@ body {
     background-color: #2f7990;
 }
 
-/* Tablet & HP (lebar <= 900px) */
+
 @media (max-width: 900px) {
     .layout-wrapper,
     .main-wrapper {
@@ -970,7 +970,7 @@ body {
     }
 
     .program-table {
-        min-width: 650px;
+        min-width: 0px;
     }
 
     .calendar-wrapper {
@@ -989,6 +989,31 @@ body {
 
     .form-row {
         flex-direction: column;
+    }
+
+     .th-status,
+    .th-periode,
+    .th-lokasi,
+    .td-status,
+    .td-periode,
+    .td-lokasi {
+        display: none;
+    }
+
+    .program-table thead th,
+    .program-table tbody td {
+        padding: 10px 8px;
+        font-size: 13px;
+    }
+
+    .td-program {
+        max-width: none;
+        white-space: normal;
+    }
+
+    .td-aksi {
+        white-space: nowrap;
+        width: 1%;
     }
 }
 
