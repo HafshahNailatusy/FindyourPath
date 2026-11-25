@@ -15,7 +15,16 @@
 
         <div class="main-wrapper">
             <header class="header">
-                <h1 class="header-title">Profil Admin</h1>
+                <div class="header-left">
+                    <button type="button" class="mobile-toggle-btn" id="sidebarToggleBtn" aria-label="Menu">
+                        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h1 class="header-title">Profil Admin</h1>
+                </div>
                 <div class="header-right">
                     <button class="header-notif" aria-label="Notifikasi">
                         <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="..." stroke="#27566A" stroke-width="1.8"/></svg>

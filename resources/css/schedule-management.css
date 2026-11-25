@@ -932,7 +932,23 @@ body {
     background-color: #2f7990;
 }
 
+/* Tablet & HP (lebar <= 900px) */
 @media (max-width: 900px) {
+    .layout-wrapper,
+    .main-wrapper {
+        height: auto;
+        overflow: visible;
+    }
+
+    .header {
+        padding: 0 16px;
+        height: 68px;
+    }
+
+    .header-title {
+        font-size: 18px;
+    }
+
     .main-content {
         padding: 20px 16px;
     }
@@ -946,21 +962,61 @@ body {
         align-items: stretch;
     }
 
-    .search-box, .filter-dropdown-box, .filter-date-box, .btn-primary-action {
+    .search-box,
+    .btn-primary-action {
         width: 100%;
         min-width: 0;
+        justify-content: center;
+    }
+
+    .program-table {
+        min-width: 650px;
+    }
+
+    .calendar-wrapper {
+        overflow-x: auto;
+    }
+
+    .calendar-weekdays-row,
+    .calendar-grid {
+        min-width: 560px;
+    }
+
+    .cal-day-cell {
+        min-height: 68px;
+        padding: 5px;
     }
 
     .form-row {
         flex-direction: column;
     }
+}
 
-    .cal-day-cell {
-        min-height: 60px;
-        padding: 4px;
+/* HP kecil (lebar <= 576px) */
+@media (max-width: 576px) {
+    .header-userinfo {
+        display: none;
     }
 
-    .event-title-text {
-        font-size: 9.5px;
+    .welcome-title {
+        font-size: 20px;
+    }
+
+    .content-card {
+        padding: 18px 16px;
+    }
+
+    .card-header-bar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .modal-footer {
+        flex-direction: column-reverse;
+    }
+
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
     }
 }
