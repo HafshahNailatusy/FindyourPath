@@ -236,6 +236,7 @@
                         <thead>
                             <tr class="table-header-row">
                                 <th>Judul Pengumuman</th>
+                                <th>Program</th>
                                 <th>Ringkasan Isi</th>
                                 <th>Tanggal</th>
                                 <th>Kategori</th>
@@ -252,8 +253,11 @@
                                             <span class="student-name">{{ $ann['title'] }}</span>
                                         </div>
                                     </td>
+                                    <td>
+                                        <span class="program-badge">{{ $ann['program'] ?? 'Umum' }}</span>
+                                    </td>
                                     <td class="date-cell">
-                                        {{ \Illuminate\Support\Str::limit($ann['content'], 65) }}
+                                        {{ \Illuminate\Support\Str::limit($ann['content'], 60) }}
                                     </td>
                                     <td class="date-cell">{{ $ann['date'] }}</td>
                                     <td>
@@ -262,7 +266,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" style="text-align: center; padding: 28px; color: #9CA3AF;">
+                                    <td colspan="5" style="text-align: center; padding: 28px; color: #9CA3AF;">
                                         Belum ada data pengumuman terbaru.
                                     </td>
                                 </tr>

@@ -77,7 +77,7 @@
                                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                             </svg>
                         </span>
-                        <input type="text" id="searchInput" class="search-input" placeholder="Cari judul atau isi pengumuman...">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Cari judul, program, atau isi pengumuman...">
                     </div>
 
                     <select id="categoryFilter" class="filter-select">
@@ -134,6 +134,7 @@
                         <thead>
                             <tr>
                                 <th>Judul Pengumuman</th>
+                                <th>Program</th>
                                 <th>Isi Pengumuman</th>
                                 <th>Kategori</th>
                                 <th>Tanggal Dibuat</th>
@@ -163,8 +164,15 @@
                                             </div>
                                         </div>
                                     </td>
+                                    <td class="program-name-cell">
+                                        @if(!empty($item->nama_program))
+                                            <span class="badge badge--general">{{ $item->nama_program }}</span>
+                                        @else
+                                            <span style="color: #7a9bac; font-size: 12.5px;">Umum</span>
+                                        @endif
+                                    </td>
                                     <td class="announcement-content-cell">
-                                        {{ \Illuminate\Support\Str::limit($item->content, 90) }}
+                                        {{ \Illuminate\Support\Str::limit($item->content, 85) }}
                                     </td>
                                     <td>
                                         <span class="badge {{ $badgeClass }}">{{ $item->category }}</span>
@@ -186,6 +194,7 @@
                                                 <button type="button"
                                                         class="dropdown-item dropdown-item--edit"
                                                         data-id="{{ $item->id_announcement }}"
+                                                        data-program-id="{{ $item->id_program ?? '' }}"
                                                         data-title="{{ $item->title }}"
                                                         data-content="{{ $item->content }}"
                                                         data-category="{{ $item->category }}"
@@ -210,7 +219,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 36px; color: #7a9bac;">
+                                    <td colspan="6" style="text-align: center; padding: 36px; color: #7a9bac;">
                                         Belum ada data pengumuman saat ini.
                                     </td>
                                 </tr>
@@ -295,6 +304,18 @@
                             {{ $errors->first() }}
                         </div>
                     @endif
+
+                    <div class="form-group">
+                        <label for="inputProgram" class="form-label">Pilih Program</label>
+                        <select id="inputProgram" name="id_program" class="form-control">
+                            <option value="">Umum (Semua Program)</option>
+                            @foreach($programs as $prog)
+                                <option value="{{ $prog->id_program }}" {{ (string) old('id_program') === (string) $prog->id_program ? 'selected' : '' }}>
+                                    {{ $prog->nama_program }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label for="inputTitle" class="form-label">Judul Pengumuman</label>

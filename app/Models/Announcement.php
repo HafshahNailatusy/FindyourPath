@@ -12,6 +12,7 @@ class Announcement extends Model
     protected $keyType = 'int';
 
     protected $fillable = [
+        'id_program',
         'title',
         'content',
         'category',

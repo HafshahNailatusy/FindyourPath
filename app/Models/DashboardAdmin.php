@@ -322,7 +322,15 @@ class DashboardAdmin
             return [];
         }
 
-        $rows = Announcement::orderByDesc('created_at')
+        $query = DB::table('announcements as a');
+        if (Schema::hasTable('program_management') && Schema::hasColumn('announcements', 'id_program')) {
+            $query->leftJoin('program_management as p', 'a.id_program', '=', 'p.id_program')
+                  ->select('a.*', 'p.nama_program');
+        } else {
+            $query->select('a.*');
+        }
+
+        $rows = $query->orderByDesc('a.created_at')
             ->limit($limit)
             ->get();
 
@@ -346,6 +354,7 @@ class DashboardAdmin
 
             $formatted[] = [
                 'id'       => $row->id_announcement,
+                'program'  => $row->nama_program ?? 'Umum',
                 'title'    => $row->title,
                 'content'  => $row->content,
                 'category' => $row->category,

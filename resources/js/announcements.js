@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Pencarian dan Filter Tabel
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
     const dateFilter = document.getElementById('dateFilter');
@@ -14,24 +13,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         tableRows.forEach(row => {
             const titleCell = row.querySelector('.user-name');
+            const programCell = row.querySelector('.program-name-cell');
             const contentCell = row.querySelector('.announcement-content-cell');
-            const categoryCell = row.querySelector('.badge');
+            const categoryCell = row.querySelector('td:nth-child(4) .badge');
             const dateCell = row.querySelector('.reg-date');
 
             if (!titleCell) return;
 
             const titleText = titleCell.textContent.toLowerCase();
+            const programText = programCell ? programCell.textContent.toLowerCase() : '';
             const contentText = contentCell ? contentCell.textContent.toLowerCase() : '';
             const categoryText = categoryCell ? categoryCell.textContent.trim() : '';
             const rawDate = dateCell ? dateCell.dataset.rawDate : '';
 
-            // Pencarian 
-            const matchSearch = keyword === '' || titleText.includes(keyword) || contentText.includes(keyword);
+            const matchSearch = keyword === '' ||
+                titleText.includes(keyword) ||
+                programText.includes(keyword) ||
+                contentText.includes(keyword);
 
-            // Filter Kategori
             const matchCategory = categoryVal === '' || categoryText === categoryVal;
 
-            // Filter Hari
             let matchDate = true;
             if (dateVal !== '' && rawDate !== '') {
                 const days = parseInt(dateVal, 10);
@@ -51,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
     if (dateFilter) dateFilter.addEventListener('change', applyFilters);
 
-    // Ekspor CSV
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
         exportBtn.addEventListener('click', function () {
@@ -79,7 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Tambah & Edit Announcement
     const announcementModal = document.getElementById('announcementModal');
     const announcementForm = document.getElementById('announcementForm');
     const openAddModalBtn = document.getElementById('openAddModalBtn');
@@ -89,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalTitle = document.getElementById('modalTitle');
     const formMethod = document.getElementById('formMethod');
     const formActionInput = document.getElementById('formActionInput');
+    const inputProgram = document.getElementById('inputProgram');
     const inputTitle = document.getElementById('inputTitle');
     const inputCategory = document.getElementById('inputCategory');
     const inputContent = document.getElementById('inputContent');
@@ -119,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
             announcementForm.action = targetUrl;
             if (formActionInput) formActionInput.value = targetUrl;
             formMethod.value = 'POST';
+            if (inputProgram) inputProgram.value = '';
             inputTitle.value = '';
             inputCategory.value = 'Umum';
             inputContent.value = '';
@@ -136,7 +137,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Dropdown 
     const editTriggers = document.querySelectorAll('.edit-menu-trigger');
     editTriggers.forEach(btn => {
         btn.addEventListener('click', function (e) {
@@ -172,7 +172,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }, true);
 
-    // Tombol Edit di Dropdown
     const editButtons = document.querySelectorAll('.dropdown-item--edit');
     editButtons.forEach(btn => {
         btn.addEventListener('click', function () {
@@ -180,6 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
             announcementForm.action = this.dataset.updateUrl;
             if (formActionInput) formActionInput.value = this.dataset.updateUrl;
             formMethod.value = 'PUT';
+            if (inputProgram) inputProgram.value = this.dataset.programId || '';
             inputTitle.value = this.dataset.title;
             inputCategory.value = this.dataset.category;
             inputContent.value = this.dataset.content;
@@ -191,7 +191,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Tombol Notifikasi Header
     const notifBtn = document.querySelector('.header-notif');
     if (notifBtn) {
         notifBtn.addEventListener('click', function () {

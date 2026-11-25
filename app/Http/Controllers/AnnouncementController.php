@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AnnouncementController extends Controller
 {
@@ -15,14 +17,31 @@ class AnnouncementController extends Controller
             $perPage = 10;
         }
 
-        $announcements = Announcement::orderByDesc('created_at')->paginate($perPage);
-        $categories    = ['Penting', 'Jadwal', 'Hasil Seleksi', 'Umum'];
-        $activeMenu    = 'announcement';
-        $adminName     = Auth::user()?->name ?? session('user.name', 'Admin');
+        $query = Announcement::query();
+        if (Schema::hasTable('program_management') && Schema::hasColumn('announcements', 'id_program')) {
+            $query->leftJoin('program_management as p', 'announcements.id_program', '=', 'p.id_program')
+                  ->select('announcements.*', 'p.nama_program');
+        } else {
+            $query->select('announcements.*');
+        }
+
+        $announcements = $query->orderByDesc('announcements.created_at')->paginate($perPage);
+
+        $programs = Schema::hasTable('program_management')
+            ? DB::table('program_management')
+                ->select('id_program', 'nama_program')
+                ->orderBy('nama_program')
+                ->get()
+            : collect();
+
+        $categories = ['Penting', 'Jadwal', 'Hasil Seleksi', 'Umum'];
+        $activeMenu = 'announcement';
+        $adminName  = Auth::user()?->name ?? session('user.name', 'Admin');
 
         return response()
             ->view('admin.announcements.index', compact(
                 'announcements',
+                'programs',
                 'categories',
                 'activeMenu',
                 'adminName'
@@ -37,8 +56,9 @@ class AnnouncementController extends Controller
     public function store(Request $request)
     {
         $request->merge([
-            'title'   => trim((string) $request->input('title')),
-            'content' => trim((string) $request->input('content')),
+            'id_program' => $request->filled('id_program') ? $request->input('id_program') : null,
+            'title'      => trim((string) $request->input('title')),
+            'content'    => trim((string) $request->input('content')),
         ]);
 
         $validated = $request->validate($this->rules(), $this->messages());
@@ -59,8 +79,9 @@ class AnnouncementController extends Controller
         }
 
         $request->merge([
-            'title'   => trim((string) $request->input('title')),
-            'content' => trim((string) $request->input('content')),
+            'id_program' => $request->filled('id_program') ? $request->input('id_program') : null,
+            'title'      => trim((string) $request->input('title')),
+            'content'    => trim((string) $request->input('content')),
         ]);
 
         $validated = $request->validate($this->rules(), $this->messages());
@@ -92,25 +113,28 @@ class AnnouncementController extends Controller
     private function rules(): array
     {
         return [
-            'title'    => 'required|string|min:5|max:255',
-            'content'  => 'required|string|min:10|max:5000',
-            'category' => 'required|in:Penting,Jadwal,Hasil Seleksi,Umum',
+            'id_program' => 'nullable|integer|exists:program_management,id_program',
+            'title'      => 'required|string|min:5|max:255',
+            'content'    => 'required|string|min:10|max:5000',
+            'category'   => 'required|in:Penting,Jadwal,Hasil Seleksi,Umum',
         ];
     }
 
     private function messages(): array
     {
         return [
-            'title.required'    => 'Judul pengumuman wajib diisi.',
-            'title.string'      => 'Format judul pengumuman tidak valid.',
-            'title.min'         => 'Judul pengumuman minimal terdiri dari 5 karakter.',
-            'title.max'         => 'Judul pengumuman maksimal 255 karakter.',
-            'content.required'  => 'Isi pengumuman wajib diisi.',
-            'content.string'    => 'Format isi pengumuman tidak valid.',
-            'content.min'       => 'Isi pengumuman terlalu singkat, minimal 10 karakter.',
-            'content.max'       => 'Isi pengumuman melebihi batas maksimal 5000 karakter.',
-            'category.required' => 'Kategori pengumuman wajib dipilih.',
-            'category.in'       => 'Kategori pengumuman yang dipilih tidak valid.',
+            'id_program.integer' => 'Format program yang dipilih tidak valid.',
+            'id_program.exists'  => 'Program yang dipilih tidak ditemukan di database.',
+            'title.required'     => 'Judul pengumuman wajib diisi.',
+            'title.string'       => 'Format judul pengumuman tidak valid.',
+            'title.min'          => 'Judul pengumuman minimal terdiri dari 5 karakter.',
+            'title.max'          => 'Judul pengumuman maksimal 255 karakter.',
+            'content.required'   => 'Isi pengumuman wajib diisi.',
+            'content.string'     => 'Format isi pengumuman tidak valid.',
+            'content.min'        => 'Isi pengumuman terlalu singkat, minimal 10 karakter.',
+            'content.max'        => 'Isi pengumuman melebihi batas maksimal 5000 karakter.',
+            'category.required'  => 'Kategori pengumuman wajib dipilih.',
+            'category.in'        => 'Kategori pengumuman yang dipilih tidak valid.',
         ];
     }
 }
