@@ -606,7 +606,7 @@ body {
   font-weight: 600;
 }
 
-media (max-width: 1150px) {
+@media (max-width: 1150px) {
   .summary-grid {
     grid-template-columns: repeat(2, 1fr);
   }
