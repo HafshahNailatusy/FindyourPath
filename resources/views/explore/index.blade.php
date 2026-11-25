@@ -82,7 +82,3 @@
     @endforelse
 </section>
 @endsection
-
-@push('scripts')
-<script src="{{ asset('js/explore-program.js') }}"></script>
-@endpush

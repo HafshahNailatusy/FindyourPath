@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - FindYourPath</title>
     <link rel="stylesheet" href="{{ asset('css/register.css') }}">
+    @vite(['resources/css/register.css', 'resources/js/register.js'])
 </head>
 
 <body>
@@ -116,7 +117,6 @@
             </div>
         </div>
     </div>
-    <script src="{{ asset('js/register.js') }}"></script>
 </body>
 
 </html>

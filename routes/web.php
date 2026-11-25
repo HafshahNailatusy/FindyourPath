@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardUserController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\DetailProgramController;
 use App\Http\Controllers\ProfileUserController;
+use App\Http\Middleware\PreventBackHistory;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -36,7 +37,7 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->middleware('auth')
     ->name('logout');
 
-Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
+Route::middleware(['auth', 'role:mahasiswa', PreventBackHistory::class])->group(function () {
 
     Route::get('/dashboard', [DashboardUserController::class, 'index'])
         ->name('mahasiswa.dashboard');
@@ -89,7 +90,7 @@ Route::middleware(['auth', 'role:mahasiswa'])->group(function () {
     });
 });
 
-Route::middleware(['auth', 'role:admin'])
+Route::middleware(['auth', 'role:admin', PreventBackHistory::class])
     ->prefix('admin')
     ->group(function () {
 
