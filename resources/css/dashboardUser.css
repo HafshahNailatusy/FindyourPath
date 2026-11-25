@@ -54,14 +54,6 @@ body {
     min-height: 100vh;
 }
 
-@media (max-width: 900px) {
-    .main-content {
-        margin-left: 0 !important;
-        width: 100% !important;
-        padding: 20px 16px 36px;
-    }
-}
-
 .header {
     position: sticky;
     top: 0;
