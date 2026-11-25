@@ -13,7 +13,17 @@
 
     <div class="main-wrapper">
         <header class="header">
-            <h1 class="header-title">Dashboard Admin</h1>
+
+            <div class="header-left">
+                <button type="button" class="hamburger-btn" id="sidebarToggleBtn" aria-label="Buka menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 class="header-title">Dashboard Admin</h1>
+            </div>
 
             <div class="header-right">
                 <button type="button" class="header-notif" title="Notifikasi" aria-label="Notifikasi">
@@ -35,7 +45,13 @@
         <main class="main-content">
             <h2 class="greeting-title">Hi, {{ $adminName ?? 'Admin' }}!</h2>
             <p class="greeting-sub">Ringkasan data program, pengguna mahasiswa, dan pengumuman FindYourPath.</p>
-
+                @if(session('success'))
+                <div class="alert-success">{{ session('success') }}</div>
+                @endif
+                
+                @if(session('error'))
+                <div class="alert-error">{{ session('error') }}</div>
+                @endif
             <div class="stats-grid">
                  <div class="stat-card">
                     <div class="stat-card-header">
@@ -213,7 +229,8 @@
                     </a>
                 </div>
 
-                <table class="registrations-table" id="dashboardTable">
+                <div class="dashboard-table-wrap">
+                    <table class="registrations-table" id="dashboardTable">
                     <thead>
                         <tr class="table-header-row">
                             <th>Judul Pengumuman</th>
@@ -221,8 +238,8 @@
                             <th>Tanggal</th>
                             <th>Kategori</th>
                         </tr>
-                    </thead>
-                    <tbody>
+                    </table>
+                </div>
                         @forelse($recentAnnouncements as $ann)
                             <tr class="table-row">
                                 <td>

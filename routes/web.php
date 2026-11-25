@@ -123,6 +123,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::post('/profile', [AdminProfileController::class, 'update'])
             ->name('admin.profile.update');
 
+        Route::put('/profile', [AdminProfileController::class, 'update'])
+            ->name('admin.profile.update');
+
         Route::delete('/profile/avatar', [AdminProfileController::class, 'deleteAvatar'])
             ->name('admin.profile.avatar.delete');
 

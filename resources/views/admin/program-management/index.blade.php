@@ -21,6 +21,13 @@
         <div class="main-wrapper">
             <header class="header">
                 <div class="header-left">
+                    <button type="button" class="hamburger-btn" id="sidebarToggleBtn" aria-label="Buka menu">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
                     <h1 class="header-title">Program Management</h1>
                 </div>
 
@@ -44,6 +51,17 @@
                 @if(session('success'))
                 <div class="pm-alert-success">
                     {{ session('success') }}
+                </div>
+                @endif
+
+                @if ($errors->any())
+                <div class="pm-alert-error">
+                    <strong style="display: block; margin-bottom: 6px;">Terdapat kesalahan pada formulir:</strong>
+                    <ul style="margin: 0; padding-left: 20px; font-size: 13.5px; line-height: 1.5;">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
                 @endif
 

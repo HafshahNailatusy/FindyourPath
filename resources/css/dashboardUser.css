@@ -563,11 +563,23 @@ body {
     }
 }
 
-@media (max-width: 900px) {
+@media screen and (max-width: 900px) {
+    .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 20px 16px 36px;
+    }
+
     .header {
         padding: 0 16px;
         margin: -20px -16px 20px;
-        height: 70px;
+        height: 68px;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
     .header-title {
@@ -578,78 +590,54 @@ body {
         display: inline-flex !important;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
-    }
-
-    .header-userinfo {
-        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #27566A;
+        padding: 4px;
     }
 
     .welcome-banner {
-        padding: 20px;
+        padding: 18px;
     }
 
     .welcome-title {
-        font-size: 20px;
+        font-size: 19px;
     }
 
     .welcome-subtitle {
         font-size: 13px;
     }
 
-    .dash-card {
-        padding: 18px 16px;
-    }
-
-    .opportunity-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    .dashboard-top-grid {
+        grid-template-columns: 1fr;
         gap: 16px;
     }
-}
 
-@media (max-width: 640px) {
-    .main-content {
-        padding: 16px 12px 32px;
-    }
-
-    .welcome-banner {
+    .dash-card {
         padding: 16px;
     }
 
-    .welcome-title {
-        font-size: 18px;
-    }
-
-    .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .view-all-link {
-        align-self: flex-start;
-    }
-
-    .schedule-item {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .schedule-indicator {
-        display: none;
-    }
-
-    .schedule-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
+    .card-header h2 {
+        font-size: 15.5px;
     }
 
     .opportunity-grid {
         grid-template-columns: 1fr;
+        gap: 14px;
     }
 
     .opportunity-poster {
-        height: 180px;
+        height: 160px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .header-userinfo {
+        display: none;
+    }
+
+    .header-title {
+        font-size: 17px;
     }
 }

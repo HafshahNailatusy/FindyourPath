@@ -13,8 +13,7 @@
         <ul class="nav-list">
             @foreach ($menuItems as $item)
                 <li class="nav-item">
-                    <a href="{{ $item['url'] }}" 
-                       class="nav-link {{ $active === $item['key'] ? 'active' : '' }}">
+                    <a href="{{ $item['url'] }}" class="nav-link {{ $active === $item['key'] ? 'active' : '' }}">
                         <span class="nav-title">{{ $item['title'] }}</span>
                     </a>
                 </li>
@@ -25,7 +24,7 @@
     <div class="sidebar-footer">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="nav-link logout-link" style="background:none; border:none; width:100%; text-align:left; cursor:pointer;">
+            <button type="submit" class="nav-link logout-link logout-btn" >
                 <span class="nav-title">Keluar</span>
             </button>
         </form>
