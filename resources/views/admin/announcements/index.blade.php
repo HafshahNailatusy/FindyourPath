@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Announcement Management - FindYourPath</title>
+    <title>Announcement - FindYourPath</title>
     <link rel="icon" href="data:,">
     @vite(['resources/css/announcements.css', 'resources/js/announcements.js'])
 </head>
@@ -21,7 +21,7 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <h1 class="header-title">Announcement Management</h1>
+                <h1 class="header-title">Announcement</h1>
             </div>
 
             <div class="header-right">
@@ -67,7 +67,7 @@
             @endif
 
             <div class="panel" style="background: linear-gradient(180deg, #F5FAFD 0%, #FFFFFF 36%);">
-                <h3 class="panel-title">Daftar Pengumuman</h3>
+                <h3 class="panel-title">Daftar Announcement</h3>
 
                 <div class="filter-bar">
                     <div class="search-wrap">
@@ -115,8 +115,10 @@
                 </div>
 
                 <div class="table-meta">
-                    <div class="table-meta-left">
-                        <span class="table-list-title">Announcement List</span>
+                    <div class="table-meta-right">
+                        <span class="table-count">
+                            Showing {{ $announcements->count() }} of {{ $announcements->total() }} announcements
+                        </span>
                         <button type="button" class="refresh-btn" onclick="window.location.reload()" title="Muat Ulang">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="23 4 23 10 17 10"></polyline>
@@ -125,9 +127,6 @@
                             </svg>
                         </button>
                     </div>
-                    <span class="table-count">
-                        Showing {{ $announcements->count() }} of {{ $announcements->total() }} announcements
-                    </span>
                 </div>
 
                 <div class="table-wrap">
