@@ -1,4 +1,41 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // 1. Toggle Sidebar Mobile
+    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+    const sidebar = document.getElementById('fypSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    const closeSidebarBtn = document.getElementById('sidebarCloseBtn');
+
+    if (sidebarToggleBtn && sidebar) {
+        sidebarToggleBtn.addEventListener('click', function () {
+            setTimeout(function () {
+                if (sidebar.getBoundingClientRect().left < 0) {
+                    sidebar.classList.add('open', 'active', 'show');
+                    sidebar.style.transform = 'translateX(0)';
+                    sidebar.style.left = '0px';
+                    if (backdrop) {
+                        backdrop.classList.add('active', 'show');
+                        backdrop.style.display = 'block';
+                    }
+                }
+            }, 10);
+        });
+    }
+
+    const closeMobileSidebar = function () {
+        if (!sidebar) return;
+        sidebar.classList.remove('open', 'active', 'show');
+        sidebar.style.transform = '';
+        sidebar.style.left = '';
+        if (backdrop) {
+            backdrop.classList.remove('active', 'show');
+            backdrop.style.display = '';
+        }
+    };
+
+    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+    if (backdrop) backdrop.addEventListener('click', closeMobileSidebar);
+
+    // 2. Pencarian & Filter Tabel
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
     const dateFilter = document.getElementById('dateFilter');
@@ -24,16 +61,16 @@ document.addEventListener("DOMContentLoaded", function () {
             const categoryText = categoryCell ? categoryCell.textContent.trim() : '';
             const rawDate = dateCell ? dateCell.dataset.rawDate : '';
 
-            // 1. Pencarian Judul / Isi
+            // Pencarian Judul / Isi
             const matchSearch = keyword === '' || titleText.includes(keyword) || contentText.includes(keyword);
 
-            // 2. Filter Kategori
+            // Filter Kategori
             const matchCategory = categoryVal === '' || categoryText === categoryVal;
 
-            // 3. Filter Hari
+            // Filter Hari
             let matchDate = true;
             if (dateVal !== '' && rawDate !== '') {
-                const days = parseInt(dateVal);
+                const days = parseInt(dateVal, 10);
                 if (!isNaN(days)) {
                     const rowDate = new Date(rawDate);
                     const diffTime = Math.abs(now - rowDate);
@@ -50,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
     if (dateFilter) dateFilter.addEventListener('change', applyFilters);
 
-    // Fitur Ekspor CSV
+    // 3. Fitur Ekspor CSV
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
         exportBtn.addEventListener('click', function () {
@@ -78,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Modal Tambah & Edit Announcement
+    // 4. Modal Tambah & Edit Announcement
     const announcementModal = document.getElementById('announcementModal');
     const announcementForm = document.getElementById('announcementForm');
     const openAddModalBtn = document.getElementById('openAddModalBtn');
@@ -87,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const modalTitle = document.getElementById('modalTitle');
     const formMethod = document.getElementById('formMethod');
+    const formActionInput = document.getElementById('formActionInput');
     const inputTitle = document.getElementById('inputTitle');
     const inputCategory = document.getElementById('inputCategory');
     const inputContent = document.getElementById('inputContent');
@@ -112,8 +150,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (openAddModalBtn) {
         openAddModalBtn.addEventListener('click', function () {
+            const targetUrl = typeof storeAnnouncementUrl !== 'undefined' ? storeAnnouncementUrl : '/admin/announcements';
             modalTitle.textContent = 'Tambah Pengumuman';
-            announcementForm.action = typeof storeAnnouncementUrl !== 'undefined' ? storeAnnouncementUrl : '/admin/announcements';
+            announcementForm.action = targetUrl;
+            if (formActionInput) formActionInput.value = targetUrl;
             formMethod.value = 'POST';
             inputTitle.value = '';
             inputCategory.value = 'Umum';
@@ -132,18 +172,27 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Dropdown Aksi
+    // 5. Dropdown Aksi (Posisi Fixed agar tidak terpotong tabel)
     const editTriggers = document.querySelectorAll('.edit-menu-trigger');
     editTriggers.forEach(btn => {
         btn.addEventListener('click', function (e) {
             e.stopPropagation();
             const currentMenu = this.nextElementSibling;
+            const isOpen = currentMenu.classList.contains('show');
 
             document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
-                if (menu !== currentMenu) menu.classList.remove('show');
+                menu.classList.remove('show');
             });
 
-            currentMenu.classList.toggle('show');
+            if (!isOpen) {
+                const rect = this.getBoundingClientRect();
+                currentMenu.style.position = 'fixed';
+                currentMenu.style.top = `${rect.bottom + 4}px`;
+                currentMenu.style.left = `${Math.max(12, rect.right - 160)}px`;
+                currentMenu.style.right = 'auto';
+                currentMenu.style.zIndex = '1500';
+                currentMenu.classList.add('show');
+            }
         });
     });
 
@@ -153,12 +202,19 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Tombol Edit di Dropdown
+    window.addEventListener('scroll', function () {
+        document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }, true);
+
+    // 6. Tombol Edit di Dropdown
     const editButtons = document.querySelectorAll('.dropdown-item--edit');
     editButtons.forEach(btn => {
         btn.addEventListener('click', function () {
             modalTitle.textContent = 'Perbarui Pengumuman';
             announcementForm.action = this.dataset.updateUrl;
+            if (formActionInput) formActionInput.value = this.dataset.updateUrl;
             formMethod.value = 'PUT';
             inputTitle.value = this.dataset.title;
             inputCategory.value = this.dataset.category;
@@ -170,4 +226,12 @@ document.addEventListener("DOMContentLoaded", function () {
             openModal();
         });
     });
+
+    // 7. Tombol Notifikasi Header
+    const notifBtn = document.querySelector('.header-notif');
+    if (notifBtn) {
+        notifBtn.addEventListener('click', function () {
+            alert('Belum ada notifikasi baru.');
+        });
+    }
 });

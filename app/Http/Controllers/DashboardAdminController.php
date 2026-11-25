@@ -49,28 +49,34 @@ class DashboardAdminController extends Controller
         $bidangPrograms     = $distribusi['items'];
         $totalBidangProgram = $distribusi['grandTotal'];
 
-            $recentAnnouncements = $this->model->getRecentAnnouncements(5);
+        $recentAnnouncements = $this->model->getRecentAnnouncements(5);
 
         $activeMenu = 'dashboard';
         $adminName  = Auth::user()?->name ?? session('user.name', 'Admin');
 
-        return view('admin.dashboard-admin.index', compact(
-            'totalProgram',
-            'programGrowth',
-            'totalSchedule',
-            'scheduleGrowth',
-            'nearestSchedule',
-            'totalMahasiswa',
-            'mahasiswaGrowth',
-            'availableYears',
-            'selectedYear',
-            'monthlyTrends',
-            'chartMaxY',
-            'bidangPrograms',
-            'totalBidangProgram',
-            'recentAnnouncements',
-            'activeMenu',
-            'adminName'
-        ));
+        return response()
+            ->view('admin.dashboard-admin.index', compact(
+                'totalProgram',
+                'programGrowth',
+                'totalSchedule',
+                'scheduleGrowth',
+                'nearestSchedule',
+                'totalMahasiswa',
+                'mahasiswaGrowth',
+                'availableYears',
+                'selectedYear',
+                'monthlyTrends',
+                'chartMaxY',
+                'bidangPrograms',
+                'totalBidangProgram',
+                'recentAnnouncements',
+                'activeMenu',
+                'adminName'
+            ))
+            ->withHeaders([
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                'Pragma'        => 'no-cache',
+                'Expires'       => 'Sat, 01 Jan 2000 00:00:00 GMT',
+            ]);
     }
 }

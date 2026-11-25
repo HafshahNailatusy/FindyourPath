@@ -13,7 +13,16 @@
 
     <div class="main-wrapper">
         <header class="header">
-            <h1 class="header-title">Announcement Management</h1>
+            <div class="header-left">
+                <button type="button" class="hamburger-btn" id="sidebarToggleBtn" aria-label="Buka menu">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <h1 class="header-title">Announcement Management</h1>
+            </div>
 
             <div class="header-right">
                 <button type="button" class="header-notif" title="Notifikasi" aria-label="Notifikasi">
@@ -42,9 +51,18 @@
                 </div>
             @endif
 
+           @if(session('error'))
+                <div class="alert-error">{{ session('error') }}</div>
+            @endif
+
             @if($errors->any())
                 <div class="alert-error">
-                    {{ $errors->first() }}
+                    <strong>Gagal menyimpan pengumuman:</strong>
+                    <ul style="margin: 6px 0 0 18px;">
+                        @foreach($errors->all() as $err)
+                            <li>{{ $err }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -112,7 +130,7 @@
                     </span>
                 </div>
 
-                <div class="table-wrap" style="overflow: visible;">
+                <div class="table-wrap">
                     <table class="reg-table" id="announcementTable">
                         <thead>
                             <tr>
@@ -253,47 +271,72 @@
         </main>
     </div>
 
-    <div id="announcementModal" class="modal-overlay" style="z-index: 9999;">
+    @php
+        $hasValidationErrors = $errors->any();
+        $oldAction = old('form_action', route('admin.announcements.store'));
+        $oldMethod = old('_method', 'POST');
+    @endphp
+
+    <div id="announcementModal" class="modal-overlay {{ $hasValidationErrors ? 'active' : '' }}" style="z-index: 9999;">
         <div class="modal-box" style="position: relative; z-index: 10000;">
             <div class="modal-header">
-                <h3 id="modalTitle" class="modal-title">Tambah Pengumuman</h3>
+                <h3 id="modalTitle" class="modal-title">
+                    {{ $oldMethod === 'PUT' ? 'Perbarui Pengumuman' : 'Tambah Pengumuman' }}
+                </h3>
                 <button type="button" id="closeModalBtn" class="modal-close">&times;</button>
             </div>
 
-            <form id="announcementForm" action="{{ route('admin.announcements.store') }}" method="POST">
+            <form id="announcementForm" action="{{ $oldAction }}" method="POST">
                 @csrf
-                <input type="hidden" id="formMethod" name="_method" value="POST">
+                <input type="hidden" id="formMethod" name="_method" value="{{ $oldMethod }}">
+                <input type="hidden" id="formActionInput" name="form_action" value="{{ $oldAction }}">
 
                 <div class="modal-body">
+                    @if($hasValidationErrors)
+                        <div class="alert-error" style="margin-bottom: 4px; padding: 10px 12px; font-size: 12.5px;">
+                            {{ $errors->first() }}
+                        </div>
+                    @endif
+
                     <div class="form-group">
                         <label for="inputTitle" class="form-label">Judul Pengumuman</label>
-                        <input type="text" id="inputTitle" name="title" class="form-control" placeholder="Masukkan judul pengumuman..." required maxlength="255">
+                        <input type="text" id="inputTitle" name="title" class="form-control"
+                               value="{{ old('title') }}"
+                               placeholder="Masukkan judul pengumuman (min. 5 karakter)..."
+                               required minlength="5" maxlength="255">
                     </div>
 
                     <div class="form-group">
                         <label for="inputCategory" class="form-label">Kategori</label>
                         <select id="inputCategory" name="category" class="form-control" required>
-                            <option value="Umum">Umum</option>
-                            <option value="Penting">Penting</option>
-                            <option value="Jadwal">Jadwal</option>
-                            <option value="Hasil Seleksi">Hasil Seleksi</option>
+                            @foreach(['Umum', 'Penting', 'Jadwal', 'Hasil Seleksi'] as $catOption)
+                                <option value="{{ $catOption }}" {{ old('category', 'Umum') === $catOption ? 'selected' : '' }}>
+                                    {{ $catOption }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="inputContent" class="form-label">Isi Pengumuman</label>
-                        <textarea id="inputContent" name="content" class="form-control form-textarea" rows="4" placeholder="Tulis detail isi pengumuman di sini..." required></textarea>
+                        <textarea id="inputContent" name="content" class="form-control form-textarea" rows="4"
+                                  placeholder="Tulis detail isi pengumuman di sini (min. 10 karakter)..."
+                                  required minlength="10" maxlength="5000">{{ old('content') }}</textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="inputTanggal" class="form-label">Tanggal Publikasi</label>
-                        <input type="text" id="inputTanggal" class="form-control form-control--readonly" readonly>
+                        <input type="text" id="inputTanggal" name="display_date"
+                               value="{{ old('display_date', now()->format('d M Y')) }}"
+                               class="form-control form-control--readonly" readonly>
                     </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" id="cancelModalBtn" class="btn btn--outline">Batal</button>
-                    <button type="submit" id="submitModalBtn" class="btn btn--sidebar-teal">Simpan Pengumuman</button>
+                    <button type="submit" id="submitModalBtn" class="btn btn--sidebar-teal">
+                        {{ $oldMethod === 'PUT' ? 'Simpan Perubahan' : 'Publikasikan' }}
+                    </button>
                 </div>
             </form>
         </div>
