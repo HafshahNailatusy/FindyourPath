@@ -1,28 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
-const sidebar = document.getElementById('fypSidebar');
-const backdrop = document.getElementById('sidebarBackdrop');
-const closeBtn = document.getElementById('sidebarCloseBtn');
-const toggleBtn = document.getElementById('sidebarToggleBtn');
+  const sidebar = document.getElementById('fypSidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  const closeBtn = document.getElementById('sidebarCloseBtn');
+  const toggleBtn = document.getElementById('sidebarToggleBtn');
 
-function openSidebar() {
-    if (sidebar && backdrop) {
-        sidebar.classList.add('open');
-        backdrop.classList.add('show');
+  function setSidebar(isOpen) {
+    if (sidebar) {
+      sidebar.classList.toggle('open', isOpen);
+      sidebar.classList.toggle('active', isOpen);
     }
-}
+    if (backdrop) {
+      backdrop.classList.toggle('show', isOpen);
+      backdrop.classList.toggle('active', isOpen);
+    }
+  }
 
-function closeSidebar() {
-    if (sidebar && backdrop) {
-        sidebar.classList.remove('open');
-        backdrop.classList.remove('show');
-    }
-}
-
-    if (toggleBtn) {
-        toggleBtn.addEventListener('click', openSidebar);
-    } if (closeBtn) {
-        closeBtn.addEventListener('click', closeSidebar);
-    } if (backdrop) {
-        backdrop.addEventListener('click', closeSidebar);
-    }
+  toggleBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    setSidebar(true);
+  });
+  closeBtn?.addEventListener('click', () => setSidebar(false));
+  backdrop?.addEventListener('click', () => setSidebar(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setSidebar(false);
+  });
 });
