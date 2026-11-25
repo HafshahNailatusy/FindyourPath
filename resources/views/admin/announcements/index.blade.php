@@ -51,7 +51,7 @@
                 </div>
             @endif
 
-           @if(session('error'))
+            @if(session('error'))
                 <div class="alert-error">{{ session('error') }}</div>
             @endif
 
@@ -66,7 +66,7 @@
                 </div>
             @endif
 
-            <div class="panel" style="background: linear-gradient(180deg, #F5FAFD 0%, #FFFFFF 36%); overflow: visible;">
+            <div class="panel" style="background: linear-gradient(180deg, #F5FAFD 0%, #FFFFFF 36%);">
                 <h3 class="panel-title">Daftar Pengumuman</h3>
 
                 <div class="filter-bar">
@@ -173,9 +173,9 @@
                                     <td class="reg-date" data-raw-date="{{ $item->created_at ? $item->created_at->format('Y-m-d') : '' }}">
                                         {{ $formattedDate }}
                                     </td>
-                                    <td style="position: relative; overflow: visible;">
-                                        <div class="action-dropdown-wrap" style="position: relative; z-index: 30;">
-                                            <button type="button" class="action-btn edit-menu-trigger" title="Opsi">
+                                    <td>
+                                        <div class="action-dropdown-wrap">
+                                            <button type="button" class="action-btn edit-menu-trigger" title="Opsi" aria-label="Opsi">
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                                                     <circle cx="12" cy="5" r="2"></circle>
                                                     <circle cx="12" cy="12" r="2"></circle>
@@ -183,7 +183,7 @@
                                                 </svg>
                                             </button>
 
-                                            <div class="action-dropdown-menu" style="z-index: 999; background: #FFFFFF;">
+                                            <div class="action-dropdown-menu">
                                                 <button type="button"
                                                         class="dropdown-item dropdown-item--edit"
                                                         data-id="{{ $item->id_announcement }}"
@@ -229,7 +229,6 @@
                         $currentPage = $announcements->currentPage();
                         $lastPage    = $announcements->lastPage();
 
-                        // Hitung jendela maksimal 3 halaman yang bergeser (1-3, 3-5, dst.)
                         if ($lastPage <= 3) {
                             $startPage = 1;
                             $endPage   = $lastPage;

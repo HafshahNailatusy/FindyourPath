@@ -6,41 +6,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnNext = document.getElementById('btnNextMonth');
     const rangeLabel = document.getElementById('chartMonthRange');
 
-    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
-    const sidebar = document.getElementById('fypSidebar');
-    const backdrop = document.getElementById('sidebarBackdrop');
-    const closeSidebarBtn = document.getElementById('sidebarCloseBtn');
-
-    if (sidebarToggleBtn && sidebar) {
-        sidebarToggleBtn.addEventListener('click', function () {
-            setTimeout(function () {
-                if (sidebar.getBoundingClientRect().left < 0) {
-                    sidebar.classList.add('open', 'active', 'show');
-                    sidebar.style.transform = 'translateX(0)';
-                    sidebar.style.left = '0px';
-                    if (backdrop) {
-                        backdrop.classList.add('active', 'show');
-                        backdrop.style.display = 'block';
-                    }
-                }
-            }, 10);
-        });
-    }
-
-    const closeMobileSidebar = function () {
-        if (!sidebar) return;
-        sidebar.classList.remove('open', 'active', 'show');
-        sidebar.style.transform = '';
-        sidebar.style.left = '';
-        if (backdrop) {
-            backdrop.classList.remove('active', 'show');
-            backdrop.style.display = '';
-        }
-    };
-
-    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeMobileSidebar);
-    if (backdrop) backdrop.addEventListener('click', closeMobileSidebar);
-
     if (container && typeof monthlyTrendData !== 'undefined') {
         const labels = Object.keys(monthlyTrendData);
         const values = Object.values(monthlyTrendData);

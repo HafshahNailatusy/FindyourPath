@@ -1,41 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. Toggle Sidebar Mobile
-    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
-    const sidebar = document.getElementById('fypSidebar');
-    const backdrop = document.getElementById('sidebarBackdrop');
-    const closeSidebarBtn = document.getElementById('sidebarCloseBtn');
-
-    if (sidebarToggleBtn && sidebar) {
-        sidebarToggleBtn.addEventListener('click', function () {
-            setTimeout(function () {
-                if (sidebar.getBoundingClientRect().left < 0) {
-                    sidebar.classList.add('open', 'active', 'show');
-                    sidebar.style.transform = 'translateX(0)';
-                    sidebar.style.left = '0px';
-                    if (backdrop) {
-                        backdrop.classList.add('active', 'show');
-                        backdrop.style.display = 'block';
-                    }
-                }
-            }, 10);
-        });
-    }
-
-    const closeMobileSidebar = function () {
-        if (!sidebar) return;
-        sidebar.classList.remove('open', 'active', 'show');
-        sidebar.style.transform = '';
-        sidebar.style.left = '';
-        if (backdrop) {
-            backdrop.classList.remove('active', 'show');
-            backdrop.style.display = '';
-        }
-    };
-
-    if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeMobileSidebar);
-    if (backdrop) backdrop.addEventListener('click', closeMobileSidebar);
-
-    // 2. Pencarian & Filter Tabel
+    // Pencarian dan Filter Tabel
     const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
     const dateFilter = document.getElementById('dateFilter');
@@ -61,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const categoryText = categoryCell ? categoryCell.textContent.trim() : '';
             const rawDate = dateCell ? dateCell.dataset.rawDate : '';
 
-            // Pencarian Judul / Isi
+            // Pencarian 
             const matchSearch = keyword === '' || titleText.includes(keyword) || contentText.includes(keyword);
 
             // Filter Kategori
@@ -87,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (categoryFilter) categoryFilter.addEventListener('change', applyFilters);
     if (dateFilter) dateFilter.addEventListener('change', applyFilters);
 
-    // 3. Fitur Ekspor CSV
+    // Ekspor CSV
     const exportBtn = document.getElementById('exportBtn');
     if (exportBtn) {
         exportBtn.addEventListener('click', function () {
@@ -115,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 4. Modal Tambah & Edit Announcement
+    // Tambah & Edit Announcement
     const announcementModal = document.getElementById('announcementModal');
     const announcementForm = document.getElementById('announcementForm');
     const openAddModalBtn = document.getElementById('openAddModalBtn');
@@ -172,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 5. Dropdown Aksi (Posisi Fixed agar tidak terpotong tabel)
+    // Dropdown 
     const editTriggers = document.querySelectorAll('.edit-menu-trigger');
     editTriggers.forEach(btn => {
         btn.addEventListener('click', function (e) {
@@ -208,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }, true);
 
-    // 6. Tombol Edit di Dropdown
+    // Tombol Edit di Dropdown
     const editButtons = document.querySelectorAll('.dropdown-item--edit');
     editButtons.forEach(btn => {
         btn.addEventListener('click', function () {
@@ -227,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // 7. Tombol Notifikasi Header
+    // Tombol Notifikasi Header
     const notifBtn = document.querySelector('.header-notif');
     if (notifBtn) {
         notifBtn.addEventListener('click', function () {
