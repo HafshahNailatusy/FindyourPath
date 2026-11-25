@@ -204,7 +204,7 @@
 
                 <div class="history-actions">
                     <a
-                        href="{{ route('explore-program') }}"
+                        href="{{ route('programs.show', $riwayat->id_program) }}"
                         class="history-link"
                     >
                         Lihat Program
