@@ -5,7 +5,7 @@
 @section('menu', 'profile')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/ProfileUser.css') }}">
+    @vite(['resources/css/ProfileUser.css'])
 @endpush
 
 @section('content')
@@ -283,5 +283,5 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('js/ProfileUser.js') }}"></script>
+ @vite(['resources/js/ProfileUser.js'])
 @endpush

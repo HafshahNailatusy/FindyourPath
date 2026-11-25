@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Pendaftaran Lomba - FindYourPath</title>
-    <link rel="stylesheet" href="{{ asset('css/RegistrationForm.css') }}?v=6">
+    @vite(['resources/css/RegistrationForm.css'])
 </head>
 <body>
 
@@ -243,7 +243,6 @@
 
 </div>
 
-<script src="{{ asset('js/RegistrationForm.js') }}?v=6"></script>
-
+@vite(['resources/js/RegistrationForm.js'])
 </body>
 </html>

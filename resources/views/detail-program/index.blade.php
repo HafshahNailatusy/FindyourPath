@@ -4,7 +4,7 @@
 @section('menu', 'detail-program')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/DetailProgram.css') }}">
+    @vite(['resources/css/DetailProgram.css'])
 @endpush
 
 @section('content')

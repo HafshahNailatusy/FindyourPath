@@ -31,7 +31,12 @@ export default defineConfig({
                 'resources/css/admin-dashboard.css',
                 'resources/js/admin-dashboard.js',
                 'resources/css/announcements.css',
-                'resources/js/announcements.js'
+                'resources/js/announcements.js',
+                'resources/css/DetailProgram.css',
+                'resources/css/ProfileUser.css',
+                'resources/js/ProfileUser.js',
+                'resources/css/RegistrationForm.css',
+                'resources/js/RegistrationForm.js'
             ],
             refresh: true,
             fonts: [

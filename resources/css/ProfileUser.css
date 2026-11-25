@@ -336,11 +336,8 @@ a {
 .hidden {
     display: none;
 }
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
-/* =================================
-   ROOT & GLOBAL
-================================= */
+/* ROOT & GLOBAL */
 
 :root {
     --primary: #4698b8;
