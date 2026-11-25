@@ -33,7 +33,9 @@ class ProgramManagementController extends Controller
             'finished' => $finishedCount,
         ];
 
-        return view('admin.program-management.index', compact('programs', 'stats'));
+        $adminName = auth()->user()->name ?? 'Admin';
+
+        return view('admin.program-management.index', compact('programs', 'stats', 'adminName'));
     }
 
     public function store(Request $request)

@@ -45,15 +45,17 @@
         <main class="main-content">
             <h2 class="greeting-title">Hi, {{ $adminName ?? 'Admin' }}!</h2>
             <p class="greeting-sub">Ringkasan data program, pengguna mahasiswa, dan pengumuman FindYourPath.</p>
-                @if(session('success'))
+
+            @if(session('success'))
                 <div class="alert-success">{{ session('success') }}</div>
-                @endif
-                
-                @if(session('error'))
+            @endif
+
+            @if(session('error'))
                 <div class="alert-error">{{ session('error') }}</div>
-                @endif
+            @endif
+
             <div class="stats-grid">
-                 <div class="stat-card">
+                <div class="stat-card">
                     <div class="stat-card-header">
                         <span class="stat-card-title">Total Program</span>
                         <div class="stat-card-icon">
@@ -101,11 +103,11 @@
                     </div>
                     <div class="stat-card-trend" title="{{ $nearestSchedule['fullList'] ?? '' }}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         {{ $nearestSchedule['label'] ?? 'Tidak ada agenda mendatang' }}
-                            @if(($nearestSchedule['extraCount'] ?? 0) > 0)
-                        <span class="trend-up" style="font-weight: 600;">+{{ $nearestSchedule['extraCount'] }}</span>
-                            @endif
+                        @if(($nearestSchedule['extraCount'] ?? 0) > 0)
+                            <span class="trend-up" style="font-weight: 600;">+{{ $nearestSchedule['extraCount'] }}</span>
+                        @endif
                     </div>
-            </div>
+                </div>
 
                 {{-- Kartu 4: Total Mahasiswa Aktif --}}
                 <div class="stat-card">
@@ -231,42 +233,43 @@
 
                 <div class="dashboard-table-wrap">
                     <table class="registrations-table" id="dashboardTable">
-                    <thead>
-                        <tr class="table-header-row">
-                            <th>Judul Pengumuman</th>
-                            <th>Ringkasan Isi</th>
-                            <th>Tanggal</th>
-                            <th>Kategori</th>
-                        </tr>
+                        <thead>
+                            <tr class="table-header-row">
+                                <th>Judul Pengumuman</th>
+                                <th>Ringkasan Isi</th>
+                                <th>Tanggal</th>
+                                <th>Kategori</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($recentAnnouncements as $ann)
+                                <tr class="table-row">
+                                    <td>
+                                        <div class="student-cell">
+                                            <div class="student-avatar student-avatar--teal">
+                                                {{ strtoupper(substr($ann['title'], 0, 2)) }}
+                                            </div>
+                                            <span class="student-name">{{ $ann['title'] }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="date-cell">
+                                        {{ \Illuminate\Support\Str::limit($ann['content'], 65) }}
+                                    </td>
+                                    <td class="date-cell">{{ $ann['date'] }}</td>
+                                    <td>
+                                        <span class="status-badge {{ $ann['badge'] }}">{{ $ann['category'] }}</span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 28px; color: #9CA3AF;">
+                                        Belum ada data pengumuman terbaru.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
                     </table>
                 </div>
-                        @forelse($recentAnnouncements as $ann)
-                            <tr class="table-row">
-                                <td>
-                                    <div class="student-cell">
-                                        <div class="student-avatar student-avatar--teal">
-                                            {{ strtoupper(substr($ann['title'], 0, 2)) }}
-                                        </div>
-                                        <span class="student-name">{{ $ann['title'] }}</span>
-                                    </div>
-                                </td>
-                                <td class="date-cell">
-                                    {{ \Illuminate\Support\Str::limit($ann['content'], 65) }}
-                                </td>
-                                <td class="date-cell">{{ $ann['date'] }}</td>
-                                <td>
-                                    <span class="status-badge {{ $ann['badge'] }}">{{ $ann['category'] }}</span>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" style="text-align: center; padding: 28px; color: #9CA3AF;">
-                                    Belum ada data pengumuman terbaru.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
             </div>
         </main>
     </div>
