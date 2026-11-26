@@ -121,10 +121,7 @@ Route::middleware(['auth', 'role:admin', PreventBackHistory::class])
         Route::get('/profile', [AdminProfileController::class, 'index'])
             ->name('admin.profile');
 
-        Route::post('/profile', [AdminProfileController::class, 'update'])
-            ->name('admin.profile.update');
-
-        Route::put('/profile', [AdminProfileController::class, 'update'])
+        Route::match(['post', 'put'], '/profile', [AdminProfileController::class, 'update'])
             ->name('admin.profile.update');
 
         Route::delete('/profile/avatar', [AdminProfileController::class, 'deleteAvatar'])

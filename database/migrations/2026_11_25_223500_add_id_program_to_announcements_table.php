@@ -14,7 +14,7 @@ return new class extends Migration
         }
 
         $isBigInt = true;
-        if (Schema::hasTable('program_management')) {
+        if (DB::getDriverName() === 'mysql' && Schema::hasTable('program_management')) {
             $col = DB::selectOne("SHOW COLUMNS FROM program_management WHERE Field = 'id_program'");
             if ($col && isset($col->Type) && !str_contains(strtolower($col->Type), 'bigint')) {
                 $isBigInt = false;

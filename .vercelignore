@@ -1,0 +1,14 @@
+.git
+.github
+.env
+.env.*
+tests
+database/factories
+database/seeders
+bootstrap/cache/*.php
+!bootstrap/cache/.gitignore
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+node_modules
