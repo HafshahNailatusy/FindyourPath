@@ -1112,9 +1112,7 @@ a {
     border-radius: 8px;
 }
 
-/* =================================
-   BUTTON HOVER
-================================= */
+/* BUTTON HOVER */
 
 .btn-primary:hover {
     background: var(--primary-dark);
@@ -1124,9 +1122,7 @@ a {
     background: #e7ecef;
 }
 
-/* =================================
-   RESPONSIVE
-================================= */
+/* RESPONSIVE */
 
 @media (max-width: 900px) {
     .hamburger-btn {
@@ -1246,9 +1242,7 @@ a {
     font-weight: 700;
 }
 
-/* =================================
-   SKILLS
-================================= */
+/* SKILLS */
 
 .skill-list {
     display: flex;
@@ -1322,9 +1316,7 @@ a {
     font-size: 12px;
 }
 
-/* =================================
-   PORTFOLIO
-================================= */
+/* PORTFOLIO */
 
 .portfolio-empty {
     min-height: 150px;
@@ -1359,9 +1351,7 @@ a {
     font-size: 12px;
 }
 
-/* =================================
-   PROFILE COMPLETION
-================================= */
+/* PROFILE COMPLETION */
 
 .completion-number {
     color: var(--primary-dark);
@@ -1387,9 +1377,7 @@ a {
     font-size: 12px;
 }
 
-/* =================================
-   TIPS CARD
-================================= */
+/* TIPS CARD */
 
 .tips-card {
     display: flex;
